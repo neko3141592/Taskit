@@ -1,0 +1,90 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { verifyFirebaseToken } from '@/lib/auth';
+import prisma from '@/lib/prisma';
+import type { Prisma, TaskStatus } from '@/generated/prisma/client';
+
+
+export async function GET(req: NextRequest) {
+    const { ok, uid, error } = await verifyFirebaseToken(req);
+    if (!ok) {
+        return NextResponse.json({ 
+            status: 'error',
+            message: error
+        }, { status: 401 });
+    }
+
+    const searchParams = req.nextUrl.searchParams;
+    const sort: string = searchParams.get('sort') ?? 'dueDate'; 
+    const order: string = searchParams.get('order') ?? 'asc';
+    const status: string | undefined = searchParams.get('status') ?? undefined;
+    const subjectId: string | undefined = searchParams.get('subject') ?? undefined;
+    const limit: number = Number(searchParams.get('limit')) || 20;
+    const start: number = Number(searchParams.get('start')) || 0;
+
+
+    const where: Prisma.TaskWhereInput = { userId: uid! };
+    if (status) where.status = status as TaskStatus;
+    if (subjectId) where.subjectId = subjectId;
+
+
+    const orderBy: { [key: string]: string } = {};
+    orderBy[sort] = order;
+
+
+    const tasks = await prisma.task.findMany({
+        where,
+        orderBy,
+        skip: start,
+        take: limit,
+    });
+
+    return NextResponse.json({ 
+        status: 'success', 
+        message: 'タスク一覧の取得に成功しました', 
+        data: tasks
+    }, { status: 200 });
+}
+
+export async function POST(req: NextRequest) {
+    const { ok, uid, error } = await verifyFirebaseToken(req);
+    if (!ok) {
+        return NextResponse.json({ 
+            status: 'error',
+            message: error
+        }, { status: 401 });
+    }
+
+    const { title, description, dueDate, subjectId, status } = await req.json();
+
+    if (!title || !dueDate) {
+        return NextResponse.json({ 
+            status: 'error',
+            message: 'タイトルと期限は必須です'
+        }, { status: 400 });
+    }
+
+    try {
+        const newTask: Prisma.TaskUncheckedCreateInput = await prisma.task.create({
+            data: {
+                title,
+                description,
+                dueDate: new Date(dueDate),
+                userId: uid!,
+                subjectId: subjectId ?? null,
+                status: status ?? 'NOT_STARTED',
+            },
+        });
+
+        return NextResponse.json({ 
+            status: 'success',
+            message: 'タスクが作成されました',
+            data: newTask
+        }, { status: 201 });
+    } catch (err) {
+        console.error(err);
+        return NextResponse.json({ 
+            status: 'error',
+            message: 'タスクの作成に失敗しました'
+        }, { status: 500 });
+    }
+}
