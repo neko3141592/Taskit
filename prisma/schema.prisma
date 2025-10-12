@@ -45,6 +45,8 @@ model Task {
   tests       Test[]     
   tags        Tag[]
 
+  pages       Json?
+
   @@map("tasks")
 }
 
@@ -71,7 +73,7 @@ model Subject {
 
 model Tag {
   id     String @id @default(uuid())
-  name   String
+  name   String @unique
   tasks  Task[]
 }
 

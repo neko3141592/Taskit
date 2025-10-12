@@ -16,7 +16,7 @@ export async function GET(req: NextRequest) {
     const dueFrom = searchParams.get('dueFrom');
     const dueTo = searchParams.get('dueTo');
 
-    // 期限条件
+
     const dueDateFilter: Prisma.TaskWhereInput['dueDate'] = {};
     if (dueFrom) dueDateFilter.gte = new Date(dueFrom);
     if (dueTo) dueDateFilter.lte = new Date(dueTo);
@@ -24,10 +24,8 @@ export async function GET(req: NextRequest) {
     const where: Prisma.TaskWhereInput = { userId: uid! };
     if (dueFrom || dueTo) where.dueDate = dueDateFilter;
 
-    // 総タスク数
     const totalTasks = await prisma.task.count({ where });
 
-    // 完了タスク数
     const completedTasks = await prisma.task.count({
         where: { ...where, status: 'COMPLETED' }
     });

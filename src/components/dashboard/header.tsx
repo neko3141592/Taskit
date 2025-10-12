@@ -29,7 +29,7 @@ export default function Header() {
     };
 
     return (
-        <header className="border border-gray-200 h-[60px] rounded mb-4 bg-white flex items-center justify-between px-6 ">
+        <header className="border border-gray-200 h-[60px] rounded mb-4 bg-white flex items-center justify-between px-6">
             {/* 左側：ロゴやタイトル */}
             <div className="flex items-center gap-3">
                 <SidebarTrigger />

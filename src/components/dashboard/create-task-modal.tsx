@@ -30,13 +30,14 @@ import { ja } from "date-fns/locale";
 import { Calendar } from "@/components/ui/calendar";
 import { useFirebaseUser } from "@/hooks/use-firebase-user";
 import { useSubject } from "@/hooks/use-subject";
+import { toast } from "sonner"
+
+import axios from "axios";
 
 
 export default function CreateTaskModal() {
     const user = useFirebaseUser();
     const { subjects } = useSubject(user?.uid);
-
-    console.log("Subjects in CreateTaskModal:", subjects);
 
     const [isLoading, setIsLoading] = useState(false);
     const [formData, setFormData] = useState({
@@ -53,7 +54,6 @@ export default function CreateTaskModal() {
         setFormData(prev => ({ ...prev, [field]: value }));
     };
 
-    // タグ追加
     const handleAddTag = () => {
         const value = tagInput.trim();
         if (value && !tags.includes(value)) {
@@ -61,30 +61,39 @@ export default function CreateTaskModal() {
             setTagInput("");
         }
     };
-
-    // タグ削除
     const handleRemoveTag = (tag: string) => {
         setTags(tags.filter(t => t !== tag));
     };
 
+    const validateForm = () => {
+        if (!formData.title.trim()) {
+            toast.error("タイトルを入力してください");
+            return false;
+        }
+        if (!formData.dueDate) {
+            toast.error("期限を選択してください");
+            return false;
+        }
+        return true;
+    }
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        
-        if (!formData.title.trim()) {
-            // タイトルが空の場合は送信しない
-            return;
-        }
+
+        if (!validateForm()) return;
         
         setIsLoading(true);
             try {
-                // APIを呼び出してタスクを作成
-                // const response = await axios.post('/api/tasks', {
-                //   ...formData,
-                //   tags,
-                //   userId: user?.uid,
-                //   dueDate: formData.dueDate?.toISOString(),
-                // });
-
+                const res = await axios.post<APIResponse<Task>>('/api/tasks', {
+                    ...formData,
+                    tags,
+                    userId: user?.uid,
+                    dueDate: formData.dueDate?.toISOString(),
+                }, {
+                    headers: {
+                        Authorization: `Bearer ${await user?.getIdToken()}`,
+                    },
+                });
                 setFormData({
                     title: "",
                     description: "",
@@ -92,10 +101,10 @@ export default function CreateTaskModal() {
                     subjectId: "",
                     dueDate: undefined,
                 });
+                toast.success("タスクを作成しました");
                 setTags([]);
-            
             } catch (error) {
-            
+                console.error("タスクの作成中にエラーが発生しました:", error);
             } finally {
                 setIsLoading(false);
             }
@@ -104,7 +113,7 @@ export default function CreateTaskModal() {
     return (
         <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-2xl">
+            <DialogTitle className="flex items-center gap-2 text-xl">
             <ListTodo className="h-6 w-6" />
                 新規タスク
             </DialogTitle>
@@ -118,7 +127,6 @@ export default function CreateTaskModal() {
                 value={formData.title ?? ""}
                 onChange={(e) => handleChange("title", e.target.value)}
                 className="w-full text-2xl font-bold focus:outline-none focus:ring-0"
-                required
             />
             </div>
             

@@ -47,4 +47,13 @@ interface Task {
     subject?: Subject;
     tests?: Test[];
     tags?: Tag[];
+    pages?: TaskPage[];
+}
+
+interface TaskPage {
+    id: string;
+    title?: string;
+    start: number;
+    end: number;
+    completed: number[];
 }

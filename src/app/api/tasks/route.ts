@@ -41,6 +41,7 @@ export async function GET(req: NextRequest) {
         orderBy,
         skip,
         take: limit,
+        include: { tags: true, subject: true }
     });
 
     const totalCount = await prisma.task.count({ where });
@@ -64,7 +65,7 @@ export async function POST(req: NextRequest) {
         }, { status: 401 });
     }
 
-    const { title, description, dueDate, subjectId, status } = await req.json();
+    const { title, description, dueDate, subjectId, status, tags } = await req.json();
 
     if (!title || !dueDate) {
         return NextResponse.json({ 
@@ -74,7 +75,7 @@ export async function POST(req: NextRequest) {
     }
 
     try {
-        const newTask: Prisma.TaskUncheckedCreateInput = await prisma.task.create({
+        const newTask = await prisma.task.create({
             data: {
                 title,
                 description,
@@ -82,7 +83,16 @@ export async function POST(req: NextRequest) {
                 userId: uid!,
                 subjectId: subjectId ?? null,
                 status: status ?? 'NOT_STARTED',
+                tags: tags && Array.isArray(tags)
+                    ? {
+                        connectOrCreate: tags.map((tagName: string) => ({
+                            where: { name: tagName },
+                            create: { name: tagName }
+                        }))
+                    }
+                    : undefined
             },
+            include: { tags: true, subject: true, tests: true }
         });
 
         return NextResponse.json({ 
@@ -91,6 +101,7 @@ export async function POST(req: NextRequest) {
             data: newTask
         }, { status: 201 });
     } catch (err) {
+
         console.error(err);
         return NextResponse.json({ 
             status: 'error',
