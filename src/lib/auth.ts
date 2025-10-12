@@ -1,8 +1,7 @@
 import { NextRequest } from 'next/server';
 import { getAuth } from 'firebase-admin/auth';
-import { app } from '@/lib/firebaseAdmin';
+import { auth } from '@/lib/firebaseAdmin';
 
-const auth = getAuth(app);
 
 export async function verifyFirebaseToken(req: NextRequest) {
     const authHeader = req.headers.get('authorization');

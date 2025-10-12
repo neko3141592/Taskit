@@ -1,5 +1,7 @@
 import RecentlyTasks from "@/components/dashboard/recently-tasks";
 import StatisticalCard from "@/components/dashboard/statistical-card";
+import NextTest from "@/components/dashboard/next-test";
+
 
 export default function Dashboard() {
 
@@ -20,7 +22,11 @@ export default function Dashboard() {
                 overdueTasks={taskStats.overdueTasks}
             />
             {/* 最近のタスク */}
-            <RecentlyTasks />
+            <div className="flex flex-col md:flex-row gap-4">
+                <RecentlyTasks />
+                <NextTest />
+            </div>
+            
         </div>
     ); 
 }

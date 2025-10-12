@@ -1,107 +1,130 @@
+'use client'
+
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+
+import { useState, useEffect } from "react";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "@/lib/firebase";
+import { User } from "firebase/auth";
 
 import { Button } from "@/components/ui/button";
 import { CalendarIcon, ArrowRight } from "lucide-react";
+import {
+    Select,
+    SelectContent,
+    SelectGroup,
+    SelectItem,
+    SelectLabel,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select"
 import Link from "next/link";
+import axios from "axios";
 
 import RecentlyTasksList from "./recently-tasks-list";
 
-// 仕様書に基づくタスク型
-type TaskStatus = 'NOT_STARTED' | 'IN_PROGRESS' | 'COMPLETED';
-
-interface Subject {
-    id: string;
-    name: string;
-    userId: string;
-    color?: string;
-    createdAt: Date;
-}
-
-// ステータスに応じたバッジを表示するヘルパー関数
-
-
-// ダミーデータ - 科目
-const dummySubjects: Subject[] = [
-{ id: '1', name: '数学', userId: '1', color: '#FF5733', createdAt: new Date() },
-{ id: '2', name: '英語', userId: '1', color: '#33A8FF', createdAt: new Date() },
-{ id: '3', name: '物理', userId: '1', color: '#33FF57', createdAt: new Date() }
-];
-
-// ダミーデータ - 最近のタスク（作成日順）
-const dummyRecentTasks: Task[] = [
-{
-    id: '1',
-    title: '微分方程式の問題集',
-    description: '教科書p.78-85の演習問題を解く',
-    status: 'NOT_STARTED',
-    dueDate: new Date(Date.now() + 3 * 86400000), // 3日後
-    userId: '1',
-    subjectId: '1',
-    createdAt: new Date(Date.now() - 1 * 3600000), // 1時間前
-    updatedAt: new Date(Date.now() - 1 * 3600000),
-    subject: dummySubjects[0]
-},
-{
-    id: '2',
-    title: 'TOEIC単語の暗記',
-    description: '頻出単語リスト1〜3をマスターする',
-    status: 'IN_PROGRESS',
-    dueDate: new Date(Date.now() + 1 * 86400000), // 明日
-    userId: '1',
-    subjectId: '2',
-    createdAt: new Date(Date.now() - 5 * 3600000), // 5時間前
-    updatedAt: new Date(Date.now() - 2 * 3600000),
-    subject: dummySubjects[1]
-},
-{
-    id: '3',
-    title: '物理実験レポート作成',
-    description: '先週の実験結果をまとめる',
-    status: 'COMPLETED',
-    dueDate: new Date(Date.now() - 1 * 86400000), // 昨日
-    userId: '1',
-    subjectId: '3',
-    createdAt: new Date(Date.now() - 2 * 86400000), // 2日前
-    updatedAt: new Date(Date.now() - 4 * 3600000),
-    subject: dummySubjects[2]
-},
-{
-    id: '4',
-    title: '数学の中間テスト対策',
-    description: '過去問を3年分解く',
-    status: 'NOT_STARTED',
-    dueDate: new Date(Date.now() + 5 * 86400000), // 5日後
-    userId: '1',
-    subjectId: '1',
-    createdAt: new Date(Date.now() - 10 * 3600000), // 10時間前
-    updatedAt: new Date(Date.now() - 10 * 3600000),
-    subject: dummySubjects[0]
-}
-];
 
 export default function RecentlyTasks() {
-// 作成日時で降順ソート（最新順）
-    const sortedTasks = [...dummyRecentTasks].sort(
-        (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
-    );
+
+    const [currentPage, setCurrentPage] = useState<number>(1);
+    const [totalCount, setTotalCount] = useState<number>(0);
+    const [totalPages, setTotalPages] = useState<number>(0);
+    const limit: number = 5;
+    const [selectedPeriod, setSelectedPeriod] = useState<string>("week");
+    const [tasks, setTasks] = useState<Task[]>([]);
+    const [loading, setLoading] = useState<boolean>(false);
+    const [user, setUser] = useState<User | null>(null);
+
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+            setUser(firebaseUser);
+        });
+        return () => unsubscribe();
+    }, []);
+
+
+    useEffect(() => {
+        if (!user) {
+            setTasks([]);
+            return;
+        }
+        const fetchTasks = async () => {
+            setLoading(true);
+            try {
+                const token = await user.getIdToken();
+                const res = await axios.get<APIResponse<{ totalCount: number; tasks: Task[] }>>(`/api/tasks`, {
+                    params: {
+                        status: 'NOT_STARTED+IN_PROGRESS',
+                        due: selectedPeriod,
+                        sort: 'dueDate',
+                        order: 'asc',
+                        limit,
+                        skip: (currentPage - 1) * limit
+                    },
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+                console.log(res)
+                const data: Task[] = res.data.data.tasks;
+                setTotalCount(res.data.data.totalCount);
+                setTotalPages(Math.ceil(res.data.data.totalCount / limit));
+                if (data && Array.isArray(data)) {
+                    setTasks(data);
+                } else {
+                    setTasks([]);
+                }
+            } catch (error) {
+                console.log(error);
+                setTasks([]);
+            }
+            setLoading(false);
+        };
+        fetchTasks();
+    }, [selectedPeriod, user, currentPage]);
 
     return (
-        <Card className="w-full">
-        <CardHeader>
-            <CardTitle>最近のタスク</CardTitle>
-            <CardDescription>最近作成・更新されたタスク</CardDescription>
-        </CardHeader>
-        <CardContent>
-            <RecentlyTasksList tasks={sortedTasks} />
-        </CardContent>
-        <CardFooter>
-            <Link href="/dashboard/tasks" className="w-full">
-            <Button variant="outline" className="w-full">
-                すべてのタスクを見る
-                <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
-            </Link>
-        </CardFooter>
+        <Card className="w-full shadow-none md:w-2/3">
+            <CardHeader>
+                <CardTitle>期限が近いタスク</CardTitle>
+            </CardHeader>
+            <CardContent>
+                <div className="mb-4 flex items-center justify-between">
+                    <Select
+                        value={selectedPeriod}
+                        onValueChange={setSelectedPeriod}
+                    >
+                        <SelectTrigger className="w-[180px]">
+                            <SelectValue placeholder="期間を選択" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectGroup>
+                                <SelectLabel>直近</SelectLabel>
+                                <SelectItem value="week">1週間</SelectItem>
+                                <SelectItem value="month">1ヶ月</SelectItem>
+                                <SelectItem value="three-months">3ヶ月</SelectItem>
+                            </SelectGroup>
+                        </SelectContent>
+                    </Select>
+                </div>
+                
+                <RecentlyTasksList 
+                    tasks={tasks} 
+                    currentPage={currentPage}
+                    totalCount={totalCount}
+                    setCurrentPage={setCurrentPage}
+                    totalPages={Math.ceil(totalCount / limit)}
+                    isLoading={loading}
+                />
+            </CardContent>
+            <CardFooter>
+                <Link href="/dashboard/tasks" className="w-full">
+                    <Button variant="outline" className="w-full shadow-none border-none bg-black text-white hover:bg-gray-800 hover:text-white">
+                        すべてのタスクを見る
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                    </Button>
+                </Link>
+            </CardFooter>
         </Card>
     );
 }

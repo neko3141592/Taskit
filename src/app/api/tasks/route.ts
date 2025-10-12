@@ -16,32 +16,42 @@ export async function GET(req: NextRequest) {
     const searchParams = req.nextUrl.searchParams;
     const sort: string = searchParams.get('sort') ?? 'dueDate'; 
     const order: string = searchParams.get('order') ?? 'asc';
-    const status: string | undefined = searchParams.get('status') ?? undefined;
+    const statusParam = searchParams.get('status');
     const subjectId: string | undefined = searchParams.get('subject') ?? undefined;
     const limit: number = Number(searchParams.get('limit')) || 20;
-    const start: number = Number(searchParams.get('start')) || 0;
+    const skip: number = Number(searchParams.get('skip')) || 0;
 
 
     const where: Prisma.TaskWhereInput = { userId: uid! };
-    if (status) where.status = status as TaskStatus;
+    if (statusParam) {
+        const statusArray = statusParam.split('+').map(s => s.trim());
+        if (statusArray.length === 1) {
+            where.status = statusArray[0] as TaskStatus;
+        } else {
+            where.status = { in: statusArray as TaskStatus[] };
+        }
+    }
     if (subjectId) where.subjectId = subjectId;
-
 
     const orderBy: { [key: string]: string } = {};
     orderBy[sort] = order;
 
-
     const tasks = await prisma.task.findMany({
         where,
         orderBy,
-        skip: start,
+        skip,
         take: limit,
     });
+
+    const totalCount = await prisma.task.count({ where });
 
     return NextResponse.json({ 
         status: 'success', 
         message: 'タスク一覧の取得に成功しました', 
-        data: tasks
+        data: {
+            tasks,
+            totalCount
+        }
     }, { status: 200 });
 }
 
