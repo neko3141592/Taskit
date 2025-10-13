@@ -38,7 +38,7 @@ interface Task {
     title: string;
     description?: string;
     status: TaskStatus;
-    dueDate?: string;
+    dueDate: string;
     userId: string;
     subjectId?: string;
     testId?: string;

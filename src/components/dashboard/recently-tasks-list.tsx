@@ -1,5 +1,5 @@
 import { CalendarIcon } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import { getStatusBadge } from "@/components/ui/status-budge";
 import Link from "next/link";
 import {
     Pagination,
@@ -9,15 +9,9 @@ import {
     PaginationNext,
     PaginationPrevious,
 } from "@/components/ui/pagination"
+import Spinner from "../ui/spinner";
 
 
-function Spinner() {
-    return (
-        <div className="flex justify-center items-center h-[320px]">
-        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-gray-400" />
-        </div>
-    );
-}
 
 type RecentlyTasksListProps = {
     tasks: Task[],
@@ -38,16 +32,7 @@ export default function RecentlyTasksList(props: RecentlyTasksListProps) {
         });
     };
 
-    const getStatusBadge = (status: TaskStatus) => {
-        switch (status) {
-            case 'NOT_STARTED':
-                return <Badge variant="outline" className="bg-gray-100">未着手</Badge>;
-            case 'IN_PROGRESS':
-                return <Badge variant="outline" className="bg-blue-100 text-blue-700">進行中</Badge>;
-            case 'COMPLETED':
-                return <Badge variant="outline" className="bg-green-100 text-green-700">完了</Badge>;
-        }
-    };
+    
 
     const { tasks, currentPage, totalCount, totalPages, setCurrentPage, isLoading } = props;
 
@@ -55,7 +40,11 @@ export default function RecentlyTasksList(props: RecentlyTasksListProps) {
         <div className="py-4 h-[400px]">
             <div className="space-y-4 h-[320px]">
                 {isLoading ? (
-                    <Spinner />
+                    <Spinner/>
+                ) : tasks.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center h-full text-gray-400">
+                        <p className="text-center text-gray-500">最近のタスクはありません</p>
+                    </div>
                 ) : (
                     tasks.map(task => (
                         <Link
@@ -90,36 +79,39 @@ export default function RecentlyTasksList(props: RecentlyTasksListProps) {
                     ))
                 )}
             </div>
-            <Pagination className="mt-4">
-                <PaginationContent>
-                    <PaginationItem>
-                        <PaginationPrevious 
-                            onClick={() => {
-                                if (currentPage > 1) {
-                                    setCurrentPage(currentPage - 1)
-                                }
-                            }}  
-                        />
-                    </PaginationItem>
-                    <PaginationItem>
-                        <PaginationLink >{currentPage}</PaginationLink>
-                        <PaginationLink >/</PaginationLink>
-                        <PaginationLink >{totalPages}</PaginationLink>
-                    </PaginationItem>
-                    <PaginationItem>
-                        {/* <PaginationEllipsis /> */}
-                    </PaginationItem>
-                    <PaginationItem>
-                        <PaginationNext 
-                            onClick={() => {
-                                if (currentPage < totalPages) {
-                                    setCurrentPage(currentPage + 1)
-                                }
-                            }} 
-                        />
-                    </PaginationItem>
-                </PaginationContent>
-            </Pagination>
+
+            {totalPages > 0 && (
+                <Pagination className="mt-4">
+                    <PaginationContent>
+                        <PaginationItem>
+                            <PaginationPrevious 
+                                onClick={() => {
+                                    if (currentPage > 1) {
+                                        setCurrentPage(currentPage - 1)
+                                    }
+                                }}  
+                            />
+                        </PaginationItem>
+                        <PaginationItem>
+                            <PaginationLink >{currentPage}</PaginationLink>
+                            <PaginationLink >/</PaginationLink>
+                            <PaginationLink >{totalPages}</PaginationLink>
+                        </PaginationItem>
+                        <PaginationItem>
+                            {/* <PaginationEllipsis /> */}
+                        </PaginationItem>
+                        <PaginationItem>
+                            <PaginationNext 
+                                onClick={() => {
+                                    if (currentPage < totalPages) {
+                                        setCurrentPage(currentPage + 1)
+                                    }
+                                }} 
+                            />
+                        </PaginationItem>
+                    </PaginationContent>
+                </Pagination>
+            )}
         </div>
     );
 }

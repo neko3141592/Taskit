@@ -5,6 +5,7 @@ import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from 
 import { auth } from '@/lib/firebase';
 import { useRouter } from 'next/navigation';
 import { onAuthStateChanged } from 'firebase/auth';
+import { useFirebaseUser } from '@/hooks/use-firebase-user';
 
 const googleProvider = new GoogleAuthProvider();
 
@@ -14,6 +15,7 @@ export default function Login() {
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -31,15 +33,13 @@ export default function Login() {
 
         try {
             await signInWithEmailAndPassword(auth, email, password);
-            // ログイン成功後の処理
-            console.log('Authentication successful');
         } catch (error) {
             if (error.code === 'auth/invalid-credential' ) {
                 setError('メールアドレスまたはパスワードが間違っています');
             } else {
                 setError('エラーが発生しました');
             }
-            console.log(error.code);
+            console.error(error.code);
         } finally {
             setLoading(false);
         }
@@ -51,11 +51,9 @@ export default function Login() {
 
         try {
             await signInWithPopup(auth, googleProvider);
-            // ログイン成功後の処理
-            console.log('Google authentication successful');
         } catch (error) {
             setError('エラーが発生しました');
-            console.log(error)
+            console.error(error);
         } finally {
             setLoading(false);
         }

@@ -16,20 +16,24 @@ export default function TaskPageList({ pageList, setPageList, onEdit, onDelete }
 
     return (
         pageList.length > 0 ? (
-            <div className="space-y-4 h-[320px] overflow-y-auto">
+            <div className="space-y-4  overflow-y-auto max-h-[380px]">
                 {pageList.map(page => {
                     const total = page.end - page.start + 1;
                     const completedCount = page.completed.length;
                     const percent = total > 0 ? Math.round((completedCount / total) * 100) : 0;
+                    const barColor = percent === 100 ? "#6ee7b7" : "#99f6e4"; // 完了なら緑、未完了なら水色
                     return (
                         <div
                             key={page.id}
-                            className="flex flex-col gap-2 p-2 rounded-lg hover:bg-gray-50 transition-colors"
+                            className="flex flex-col gap-2 p-2 rounded-sm border  hover:bg-gray-50 transition-colors  px-4 py-3  relative"
+                            style={{
+                                background: `linear-gradient(90deg, ${barColor} ${percent}%, #f3f4f6 ${percent}%)`
+                            }}
                         >
                             <Dialog open={editOpenId === page.id} onOpenChange={open => setEditOpenId(open ? page.id : null)}>
                                 <DialogTrigger asChild>
                                     <div
-                                        className="flex items-center cursor-pointer"
+                                        className="flex items-center cursor-pointer bg-transparent"
                                         onClick={() => setEditOpenId(page.id)}
                                     >
                                         <div className="flex-1 min-w-0">
@@ -38,8 +42,7 @@ export default function TaskPageList({ pageList, setPageList, onEdit, onDelete }
                                                 {page.start}〜{page.end}ページ
                                             </p>
                                         </div>
-                                        <p className="mr-3 text-sm bg-teal-200 text-teal-700 px-2 rounded-sm">{percent}%</p>
-                                        <Progress value={percent} className="h-2  w-[100px] sm:w-[150px] xl:w-[200px]" />
+                                        <p className="mr-3 text-sm  px-2 rounded-sm">{percent}%</p>
                                     </div>
                                 </DialogTrigger>
                                 <DialogContent className="sm:max-w-[400px]">
@@ -55,6 +58,16 @@ export default function TaskPageList({ pageList, setPageList, onEdit, onDelete }
                         </div>
                     );
                 })}
+                {pageList.length > 5 && (
+                    <div className="absolute bottom-0 left-0 w-full flex flex-col items-center pointer-events-none">
+                        {/* フェードエフェクト */}
+                        <div className="w-full h-8 bg-gradient-to-t from-gray-100 to-transparent" />
+                        {/* ヒントテキスト */}
+                        <div className="text-xs text-gray-400 mb-2 -mt-6 z-10">
+                            ▼
+                        </div>
+                    </div>
+        )}
             </div>
         ) : (
             <div className="flex flex-col items-center justify-center h-[180px] text-gray-400">

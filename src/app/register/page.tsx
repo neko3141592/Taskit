@@ -33,7 +33,6 @@ export default function Register() {
         try {
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
             const token = await userCredential.user.getIdToken();
-            console.log('Registration successful');
 
             axios.post('/api/users', {
                 name: username,
@@ -56,7 +55,7 @@ export default function Register() {
             } else {
                 setError('新規登録中にエラーが発生しました');
             }
-            console.log(error);
+            console.error(error);
         } finally {
             setLoading(false);
         }
@@ -82,10 +81,9 @@ export default function Register() {
 
             router.push('/dashboard');
 
-            console.log('Google authentication & DB保存 successful');
         } catch (error: any) {
-            setError('Google認証またはデータベース保存でエラーが発生しました');
-            console.log(error);
+            setError('エラーが発生しました');
+            console.error(error);
         } finally {
             setLoading(false);
         }

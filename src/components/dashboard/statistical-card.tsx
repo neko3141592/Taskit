@@ -1,11 +1,12 @@
 'use client'
 
-import { useEffect, useState } from "react";
+import useSWR from "swr";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { CheckCircle, ListTodo } from "lucide-react"
 import { Progress } from "@/components/ui/progress"
-import axios from "axios";
 import { useFirebaseUser } from "@/hooks/use-firebase-user";
+import Spinner from "../ui/spinner";
+import axios from "axios";
 
 type CountResponse = {
     totalTasks: number;
@@ -15,58 +16,29 @@ type CountResponse = {
     completionRate: number;
 }
 
-export default function StatisticalCard() {
-    const [stats, setStats] = useState<CountResponse>({
-        totalTasks: 0,
-        completedTasks: 0,
-        notStartedTasks: 0,
-        inProgressTasks: 0,
-        completionRate: 0,
+const fetcher = async ([url, token]: [string, string]) => {
+    const res = await axios.get<APIResponse<CountResponse>>(url, {
+        headers: { Authorization: `Bearer ${token}` }
     });
-    const [loading, setLoading] = useState(true);
+    return res.data.data;
+};
 
+export default function StatisticalCard() {
     const user = useFirebaseUser();
 
-    useEffect(() => {
-        if (!user) {
-            return;
-        }
-        const fetchStats = async () => {
-            setLoading(true);
-            try {
-                const token = await user.getIdToken();
-                const res = await axios.get<APIResponse<CountResponse>>("/api/tasks/count",
-                    { headers: { Authorization: `Bearer ${token}` } }
-                );
-                const data = res.data.data;
-                setStats({
-                    totalTasks: data.totalTasks,
-                    completedTasks: data.completedTasks,
-                    notStartedTasks: data.notStartedTasks,
-                    inProgressTasks: data.inProgressTasks,
-                    completionRate: data.completionRate,
-                });
-            } catch (error) {
-                setStats({
-                    totalTasks: 0,
-                    completedTasks: 0,
-                    notStartedTasks: 0,
-                    inProgressTasks: 0,
-                    completionRate: 0,
-                });
-                console.log(error);
-            }
-            setLoading(false);
-        };
-        fetchStats();
-    }, [user]);
+    const shouldFetch = !!user;
 
-    if (loading) {
-        return (
-            <div className="flex justify-center items-center h-32">
-                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-gray-400" />
-            </div>
-        );
+    const { data: stats, error, isLoading } = useSWR(
+        shouldFetch ? ["/api/tasks/count", "token"] : null,
+        async ([url]) => {
+            const token = await user!.getIdToken();
+            return fetcher([url, token]);
+        },
+        { revalidateOnFocus: false }
+    );
+
+    if (!shouldFetch || isLoading || !stats) {
+        return <Spinner className="lex justify-center items-center min-h-[160px] w-full"/>;
     }
 
     return (
@@ -82,7 +54,6 @@ export default function StatisticalCard() {
                     <p className="text-xs text-muted-foreground mt-1">登録済みのタスク</p>
                 </CardContent>
             </Card>
-
             {/* 完了タスク数 */}
             <Card className="shadow-none">
                 <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -94,7 +65,6 @@ export default function StatisticalCard() {
                     <p className="text-xs text-muted-foreground mt-1">完了したタスク</p>
                 </CardContent>
             </Card>
-
             {/* 未着手タスク数 */}
             <Card className="shadow-none">
                 <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -105,7 +75,6 @@ export default function StatisticalCard() {
                     <p className="text-xs text-muted-foreground mt-1">未着手のタスク</p>
                 </CardContent>
             </Card>
-
             {/* 進行中タスク数 */}
             <Card className="shadow-none">
                 <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -116,7 +85,6 @@ export default function StatisticalCard() {
                     <p className="text-xs text-muted-foreground mt-1">進行中のタスク</p>
                 </CardContent>
             </Card>
-
             {/* 完了率 */}
             <Card className="shadow-none">
                 <CardHeader className="flex flex-row items-center justify-between pb-2">

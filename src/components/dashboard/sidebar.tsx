@@ -1,5 +1,7 @@
 'use client'
 
+import Link from "next/link"
+import { usePathname } from "next/navigation"
 import {
     Sidebar,
     SidebarContent,
@@ -7,181 +9,154 @@ import {
     SidebarGroupContent,
     SidebarGroupLabel,
     SidebarMenu,
-    SidebarMenuButton,
     SidebarMenuItem,
     SidebarFooter,
     SidebarHeader,
 } from "@/components/ui/sidebar"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
 import { 
-    Home, 
-    ListTodo, 
-    Calendar, 
-    BarChart3, 
-    Settings, 
-    BookOpen, 
-    GraduationCap,
-    Users 
+    Home, ListTodo, Calendar, BarChart3, Settings, BookOpen, 
+    GraduationCap, LogOut, MoreHorizontal
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useFirebaseUser } from "@/hooks/use-firebase-user"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { Button } from "@/components/ui/button"
+import { getAuth, signOut } from "firebase/auth"; // Firebaseのログアウト機能をインポート
 
+// --- 型定義とデータ定義は変更なし ---
 interface SidebarItem {
     title: string;
     url: string;
-    icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
+    icon: React.ComponentType<{ className?: string }>;
 }
-
-const dashboardItems: SidebarItem[] = [
-{
-    title: "ダッシュボード",
-    url: "/dashboard",
-    icon: Home,
-},
-{
-    title: "タスク一覧",
-    url: "/dashboard/tasks",
-    icon: ListTodo,
-},
-{
-    title: "カレンダー",
-    url: "/dashboard/calendar",
-    icon: Calendar,
-},
-]
-
-const analyticsItems = [
-{
-    title: "統計",
-    url: "/dashboard/statistics",
-    icon: BarChart3,
-},
-]
-
-const academicItems = [
-{
-    title: "教科",
-    url: "/dashboard/subjects",
-    icon: BookOpen,
-},
-{
-    title: "テスト",
-    url: "/dashboard/tests",
-    icon: GraduationCap,
-},
-]
-
-
-const systemItems = [
+interface SidebarSection {
+    label: string;
+    items: SidebarItem[];
+}
+const sidebarSections: SidebarSection[] = [
+    // ... (前回のコードと同じなので省略)
     {
-        title: "設定",
-        url: "/dashboard/settings",
-        icon: Settings,
+        label: "基本機能",
+        items: [
+            { title: "ダッシュボード", url: "/dashboard", icon: Home },
+            { title: "タスク一覧", url: "/dashboard/tasks", icon: ListTodo },
+            { title: "カレンダー", url: "/dashboard/calendar", icon: Calendar },
+        ]
     },
-]
+    {
+        label: "分析",
+        items: [
+            { title: "統計", url: "/dashboard/statistics", icon: BarChart3 },
+        ]
+    },
+    {
+        label: "学習管理",
+        items: [
+            { title: "教科", url: "/dashboard/subjects", icon: BookOpen },
+            { title: "テスト", url: "/dashboard/tests", icon: GraduationCap },
+        ]
+    },
+    {
+        label: "その他",
+        items: [
+            { title: "設定", url: "/dashboard/settings", icon: Settings },
+        ]
+    }
+];
+
 
 export default function AppSidebar() {
-    const pathname = usePathname()
+    const pathname = usePathname();
     const user = useFirebaseUser();
-    console.log(user?.photoURL);
 
-    const renderMenuItems = (items: SidebarItem[]) => {
-        return items.map((item) => {
+    const handleLogout = async () => {
+        const auth = getAuth();
+        try {
+            await signOut(auth);
+            window.location.href = '/login'; 
+        } catch (error) {
+            console.error("ログアウトエラー", error);
+        }
+    };
+
+    const renderMenuItem = (item: SidebarItem) => {
         const isActive = pathname === item.url || 
-                        (item.url !== '/dashboard' && pathname?.startsWith(item.url))
+                        (item.url !== '/dashboard' && pathname?.startsWith(item.url));
         
         return (
             <SidebarMenuItem key={item.title}>
-            <SidebarMenuButton asChild>
                 <Link 
-                href={item.url}
-                className={cn(
-                    "flex items-center space-x-2 w-full py-5",
-                    isActive && "font-medium bg-accent text-accent-foreground"
-                )}
+                    href={item.url}
+                    className={cn(
+                        "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                        isActive 
+                            ? "bg-primary text-primary-foreground"
+                            : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                    )}
                 >
-                <item.icon className="h-4 w-4" />
-                <span>{item.title}</span>
+                    <item.icon className="h-5 w-5" />
+                    <span>{item.title}</span>
                 </Link>
-            </SidebarMenuButton>
             </SidebarMenuItem>
-        )
-        })
-    }
+        );
+    };
 
     return (
-        <Sidebar className="bg-white border-r">
-        <SidebarContent className="px-2">
-            {/* <SidebarHeader className="h-16 flex items-center">
-                <Link href="/dashboard" className="text-lg font-bold">
-                    Taskit
-                </Link>
-            </SidebarHeader> */}
-            {/* 基本機能 */}
-            <SidebarGroup>
-            <SidebarGroupLabel className="text-xs font-semibold text-muted-foreground">
-                基本機能
-            </SidebarGroupLabel>
-            <SidebarGroupContent>
-                <SidebarMenu>
-                {renderMenuItems(dashboardItems)}
-                </SidebarMenu>
-            </SidebarGroupContent>
-            </SidebarGroup>
+        <Sidebar className="border-r bg-background">
 
-            {/* 分析 */}
-            <SidebarGroup>
-            <SidebarGroupLabel className="text-xs font-semibold text-muted-foreground">
-                分析
-            </SidebarGroupLabel>
-            <SidebarGroupContent>
-                <SidebarMenu>
-                {renderMenuItems(analyticsItems)}
-                </SidebarMenu>
-            </SidebarGroupContent>
-            </SidebarGroup>
+            <SidebarContent className="flex-1 overflow-auto p-2">
+                {sidebarSections.map((section) => (
+                    <SidebarGroup key={section.label} className="mb-2">
+                        <SidebarGroupLabel className="px-3 py-1 text-xs font-semibold text-muted-foreground/80">
+                            {section.label}
+                        </SidebarGroupLabel>
+                        <SidebarGroupContent>
+                            <SidebarMenu className="space-y-1">
+                                {section.items.map(renderMenuItem)}
+                            </SidebarMenu>
+                        </SidebarGroupContent>
+                    </SidebarGroup>
+                ))}
+            </SidebarContent>
 
-            {/* 学習管理 */}
-            <SidebarGroup>
-            <SidebarGroupLabel className="text-xs font-semibold text-muted-foreground">
-                学習管理
-            </SidebarGroupLabel>
-            <SidebarGroupContent>
-                <SidebarMenu>
-                {renderMenuItems(academicItems)}
-                </SidebarMenu>
-            </SidebarGroupContent>
-            </SidebarGroup>
-
-            {/* システム */}
-            <SidebarGroup>
-            <SidebarGroupLabel className="text-xs font-semibold text-muted-foreground">
-                その他
-            </SidebarGroupLabel>
-            <SidebarGroupContent>
-                <SidebarMenu>
-                {renderMenuItems(systemItems)}
-                </SidebarMenu>
-            </SidebarGroupContent>
-            </SidebarGroup>
-        </SidebarContent>
-        <SidebarFooter className="px-6 pb-4">
-            <div className="flex items-center gap-3">
-                <Avatar>
-                    <AvatarImage src={user?.photoURL} alt={user?.displayName ?? "ユーザー"} />
-                    <AvatarFallback>{user?.displayName?.charAt(0)}</AvatarFallback>
-                </Avatar>
-                <div className="flex flex-col">
-                    <span className="text-sm font-medium">{user?.displayName ?? user?.email ?? ""}</span>
-                    <span className="text-xs text-muted-foreground">{
-                        user?.email ? user.email.length > 24 ? user.email.substring(0, 21) + "..." : user.email
-                        : ""
-                        }</span>
-                </div>
-            </div>
-        </SidebarFooter>
-    </Sidebar>
+            <SidebarFooter className="border-t p-2">
+                {user && (
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" className="w-full justify-start h-auto px-1 py-2">
+                                <div className="flex items-center gap-3 w-full">
+                                    <Avatar className="h-8 w-8">
+                                        <AvatarImage src={user?.photoURL ?? undefined} alt={user?.displayName ?? "ユーザー"} />
+                                        <AvatarFallback>{user?.displayName?.charAt(0) ?? 'U'}</AvatarFallback>
+                                    </Avatar>
+                                    <div className="flex flex-col items-start min-w-0">
+                                        <span className="text-sm font-medium truncate">{user?.displayName ?? "User Name"}</span>
+                                        <span className="text-xs text-muted-foreground truncate">
+                                        {
+                                            user?.email ? user.email.length > 24 ? user.email.substring(0, 21) + "..." : user.email
+                                            : ""
+                                        }       
+                                        </span>
+                                    </div>
+                                    <MoreHorizontal className="h-5 w-5 ml-auto text-muted-foreground" />
+                                </div>
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent side="top" align="start" className="w-56">
+                            <DropdownMenuItem onClick={handleLogout} className="text-destructive focus:text-destructive focus:bg-destructive/10">
+                                <LogOut className="mr-2 h-4 w-4" />
+                                <span>ログアウト</span>
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                )}
+            </SidebarFooter>
+        </Sidebar>
     );
 }

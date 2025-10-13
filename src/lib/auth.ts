@@ -14,7 +14,7 @@ export async function verifyFirebaseToken(req: NextRequest) {
         const decoded = await auth.verifyIdToken(token);
         return { ok: true, uid: decoded.uid };
     } catch (error) {
-        console.log(error);
+        console.error(error);
         return { ok: false, error: 'トークン検証失敗' };
     }
 }

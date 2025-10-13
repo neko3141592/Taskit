@@ -7,14 +7,10 @@ import axios from 'axios';
 import { Badge } from '@/components/ui/badge';
 import TaskTitle from '@/components/dashboard/tasks/task-title';
 import TaskPage from '@/components/dashboard/tasks/task-page';
+import TaskDetails from '@/components/dashboard/tasks/task-details';
+import Spinner from '@/components/ui/spinner';
 
-function Spinner() {
-    return (
-        <div className="flex justify-center items-center h-[320px]">
-        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-gray-400" />
-        </div>
-    );
-}
+
 
 export default function Task() {
 
@@ -50,7 +46,7 @@ export default function Task() {
     if (loading || !user || !id) {
         return (
             <div>
-                <Spinner />
+                <Spinner/>
             </div>
         );
     }
@@ -59,10 +55,14 @@ export default function Task() {
         return (
             <div>
                 <TaskTitle task={task} />
-                <div className="flex">
-                    <div className="w-full md:w-2/3">
+                <div className="md:flex">
+                    <div className="w-full md:w-2/3 md:mr-4">
                         <TaskPage pages={task.pages} taskId={task.id} />
                     </div>
+                    <div className=" md:w-1/3 mt-4 md:mt-0">
+                        <TaskDetails task={task} />
+                    </div>
+                    
                 </div>
             </div>
         );

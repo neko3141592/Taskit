@@ -111,7 +111,6 @@ export default function EditPageDialog({
                             >ページの削除</DropdownMenuItem>
                     </DropdownMenuContent>
                     </DropdownMenu>
-                    <span>ページの編集</span>
                 </DialogTitle>
             </DialogHeader>
             <form

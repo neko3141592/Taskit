@@ -65,7 +65,6 @@ export default function RecentlyTasks() {
                         Authorization: `Bearer ${token}`
                     }
                 });
-                console.log(res)
                 const data: Task[] = res.data.data.tasks;
                 setTotalCount(res.data.data.totalCount);
                 setTotalPages(Math.ceil(res.data.data.totalCount / limit));
@@ -75,7 +74,7 @@ export default function RecentlyTasks() {
                     setTasks([]);
                 }
             } catch (error) {
-                console.log(error);
+                console.error(error);
                 setTasks([]);
             }
             setLoading(false);
