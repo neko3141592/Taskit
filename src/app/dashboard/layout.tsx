@@ -7,9 +7,7 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 import AppSidebar from "@/components/dashboard/sidebar";
 import Header from '@/components/dashboard/header';
 import { Toaster } from "@/components/ui/sonner";
-import { Loader2 } from "lucide-react";
 import Spinner from '@/components/ui/spinner';
-import { Metadata } from 'next';
 
 
 export default function DashboardLayout({

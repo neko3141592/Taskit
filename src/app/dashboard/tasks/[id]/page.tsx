@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { useFirebaseUser } from '@/hooks/use-firebase-user';
 import axios from 'axios';
-import { Badge } from '@/components/ui/badge';
 import TaskTitle from '@/components/dashboard/tasks/task-title';
 import TaskPage from '@/components/dashboard/tasks/task-page';
 import TaskDetails from '@/components/dashboard/tasks/task-details';

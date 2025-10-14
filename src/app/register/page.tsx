@@ -5,6 +5,7 @@ import { createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, on
 import { auth } from '@/lib/firebase';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
+import { useFirebaseUser } from '@/hooks/use-firebase-user';
 
 const googleProvider = new GoogleAuthProvider();
 
@@ -16,14 +17,13 @@ export default function Register() {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
 
+    const user = useFirebaseUser();
+
     useEffect(() => {
-            const unsubscribe = onAuthStateChanged(auth, (user) => {
-                if (user) {
-                    router.push('/dashboard');
-                }
-            });
-            return () => unsubscribe();
-    }, []);
+        if (user) {
+            router.push('/dashboard')
+        }
+    }, [user]);
 
     const handleRegister = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -81,7 +81,7 @@ export default function Register() {
 
             router.push('/dashboard');
 
-        } catch (error: any) {
+        } catch (error) {
             setError('エラーが発生しました');
             console.error(error);
         } finally {

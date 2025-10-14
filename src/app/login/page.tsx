@@ -4,7 +4,6 @@ import { useState, FormEvent, useEffect } from 'react';
 import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import { useRouter } from 'next/navigation';
-import { onAuthStateChanged } from 'firebase/auth';
 import { useFirebaseUser } from '@/hooks/use-firebase-user';
 
 const googleProvider = new GoogleAuthProvider();
@@ -16,15 +15,14 @@ export default function Login() {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
 
+    const user = useFirebaseUser();
+
 
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (user) => {
-            if (user) {
-                router.push('/dashboard');
-            }
-        });
-        return () => unsubscribe();
-    }, []);
+        if (user) {
+            router.push('/dashboard');
+        }
+    }, [user]);
 
     const handleLogin = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();

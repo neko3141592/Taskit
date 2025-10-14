@@ -48,7 +48,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({ 
         status: 'success', 
-        message: 'タスク一覧の取得に成功しました', 
+        message: '', 
         data: {
             tasks,
             totalCount
@@ -70,7 +70,7 @@ export async function POST(req: NextRequest) {
     if (!title || !dueDate) {
         return NextResponse.json({ 
             status: 'error',
-            message: 'タイトルと期限は必須です'
+            message: 'title and description is required'
         }, { status: 400 });
     }
 
@@ -93,11 +93,12 @@ export async function POST(req: NextRequest) {
                     : undefined
             },
             include: { tags: true, subject: true, tests: true }
+            
         });
 
         return NextResponse.json({ 
             status: 'success',
-            message: 'タスクが作成されました',
+            message: 'created new task',
             data: newTask
         }, { status: 201 });
     } catch (err) {
@@ -105,7 +106,7 @@ export async function POST(req: NextRequest) {
         console.error(err);
         return NextResponse.json({ 
             status: 'error',
-            message: 'タスクの作成に失敗しました'
+            message: error
         }, { status: 500 });
     }
 }

@@ -8,11 +8,10 @@ export async function GET(req: NextRequest) {
     if (!userId) {
         return NextResponse.json({
             status: "error",
-            message: "userIdが必要です"
+            message: "userId is required"
         }, { status: 400 });
     }
     try {
-        // 科目ごとに未完了・完了タスク件数を取得
         const subjects = await prisma.subject.findMany({
             where: { userId },
             orderBy: { name: "asc" },
@@ -49,7 +48,7 @@ export async function GET(req: NextRequest) {
         console.log(error);
         return NextResponse.json({
             status: "error",
-            message: "科目一覧の取得に失敗しました"
+            message: error
         }, { status: 500 });
     }
 }
@@ -70,7 +69,7 @@ export async function POST(req: NextRequest) {
         if (!name || name.trim() === '') {
             return NextResponse.json({
                 status: "error",
-                message: "科目名は必須です"
+                message: "name is required"
             }, { status: 400 });
         }
 
@@ -84,7 +83,7 @@ export async function POST(req: NextRequest) {
 
         return NextResponse.json({
             status: "success",
-            message: "科目の作成に成功しました",
+            message: "created new subject",
             data: newSubject
         }, { status: 201 });
 
@@ -92,7 +91,7 @@ export async function POST(req: NextRequest) {
         console.log(error);
         return NextResponse.json({
             status: "error",
-            message: "科目の作成に失敗しました"
+            message: error
         }, { status: 500 });
     }
 }
