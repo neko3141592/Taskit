@@ -1,41 +1,37 @@
-'use client';
-import { useParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import { useFirebaseUser } from '@/hooks/use-firebase-user';
-import axios from 'axios';
+'use client'
+
+import { useEffect, useState } from "react";
 import { Book } from 'lucide-react';
 import TaskCards from '@/components/ui/task-cards';
-import Spinner from '@/components/ui/spinner';
-import { useRouter } from 'next/navigation';
+import Spinner from "@/components/ui/spinner";
 
-export default function Subject() {
-    const { id } = useParams();
-    const user = useFirebaseUser();
-    const [ loading, setLoading ] = useState(true);
-    const [ subject, setSubject ] = useState<Subject | null>(null);
-    const router = useRouter();
+type Props = {
+    params: { id: string }
+};
 
+export default function Subject({ params }: Props) {
+    const [subject, setSubject] = useState<Subject | null>(null);
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        if (!user || !id) return;
         const fetchSubject = async () => {
-            setLoading(true);
             try {
-                const res = await axios.get<APIResponse<Subject | null>>(`/api/subjects/${id}`,
-                    { headers: { "Authorization": `Bearer ${await user.getIdToken()}` } }
-                );
-                setSubject(res.data.data);
-            } catch (error) {
-                console.error(error);
-            } finally {
-                setLoading(false);
+                const res = await fetch(`/api/subjects/${params.id}`);
+                const data: APIResponse<Subject | null> = await res.json();
+                setSubject(data.data);
+            } catch (e) {
+                setError('データ取得エラー');
             }
-        }
+        };
         fetchSubject();
-    }, [user, id]);
+    }, [params.id]);
 
-    if (loading) {
-        return <Spinner  />;
+    if (error) {
+        return <div>{error}</div>;
+    }
+
+    if (!subject) {
+        return <Spinner />;
     }
 
     return (
@@ -45,13 +41,12 @@ export default function Subject() {
                     <Book className="h-6 w-6" style={{ color: subject?.color || '#808080' }} />
                 </div>
                 <h1 className="text-xl font-bold">{subject?.name}</h1>
-                
             </div>
             <TaskCards 
                 tasks={subject?.tasks || []}
                 className="mt-6"
                 onTaskClick={(task) => {
-                    router.push(`/dashboard/tasks/${task.id}`);
+                    window.location.href = `/dashboard/tasks/${task.id}`;
                 }}
             />
         </div>

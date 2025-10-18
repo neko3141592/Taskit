@@ -1,17 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyFirebaseToken } from '@/lib/auth';
-import prisma from '@/lib/prisma';
+import {prisma} from '@/lib/prisma';
 import type { Prisma, TaskStatus } from '@/generated/prisma/client';
+import { auth } from '@/../auth';
 
 
 export async function GET(req: NextRequest) {
-    const { ok, uid, error } = await verifyFirebaseToken(req);
-    if (!ok) {
+
+    const session = await auth();
+    if (!session || !session.user?.id) {
         return NextResponse.json({ 
             status: 'error',
-            message: error
+            message: '認証されていません'
         }, { status: 401 });
     }
+    const uid = session.user.id;
 
     const searchParams = req.nextUrl.searchParams;
     const sort: string = searchParams.get('sort') ?? 'dueDate'; 
@@ -57,13 +59,14 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-    const { ok, uid, error } = await verifyFirebaseToken(req);
-    if (!ok) {
+    const session = await auth();
+    if (!session || !session.user?.id) {
         return NextResponse.json({ 
             status: 'error',
-            message: error
+            message: '認証されていません'
         }, { status: 401 });
     }
+    const uid = session.user.id;
 
     const { title, description, dueDate, subjectId, status, tags } = await req.json();
 

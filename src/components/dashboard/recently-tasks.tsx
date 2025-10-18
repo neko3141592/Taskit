@@ -1,12 +1,7 @@
 'use client'
 
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-
 import { useState, useEffect } from "react";
-import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "@/lib/firebase";
-import { User } from "firebase/auth";
-
 import { Button } from "@/components/ui/button";
 import { CalendarIcon, ArrowRight } from "lucide-react";
 import {
@@ -20,12 +15,10 @@ import {
 } from "@/components/ui/select"
 import Link from "next/link";
 import axios from "axios";
-
 import RecentlyTasksList from "./recently-tasks-list";
-
+import { useSession } from "next-auth/react";
 
 export default function RecentlyTasks() {
-
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [totalCount, setTotalCount] = useState<number>(0);
     const [totalPages, setTotalPages] = useState<number>(0);
@@ -33,15 +26,9 @@ export default function RecentlyTasks() {
     const [selectedPeriod, setSelectedPeriod] = useState<string>("week");
     const [tasks, setTasks] = useState<Task[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
-    const [user, setUser] = useState<User | null>(null);
 
-    useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
-            setUser(firebaseUser);
-        });
-        return () => unsubscribe();
-    }, []);
-
+    const { data: session, status } = useSession();
+    const user = session?.user;
 
     useEffect(() => {
         if (!user) {
@@ -51,18 +38,15 @@ export default function RecentlyTasks() {
         const fetchTasks = async () => {
             setLoading(true);
             try {
-                const token = await user.getIdToken();
                 const res = await axios.get<APIResponse<{ totalCount: number; tasks: Task[] }>>(`/api/tasks`, {
                     params: {
+                        userId: user.id,
                         status: 'NOT_STARTED+IN_PROGRESS',
                         due: selectedPeriod,
                         sort: 'dueDate',
                         order: 'asc',
                         limit,
                         skip: (currentPage - 1) * limit
-                    },
-                    headers: {
-                        Authorization: `Bearer ${token}`
                     }
                 });
                 const data: Task[] = res.data.data.tasks;

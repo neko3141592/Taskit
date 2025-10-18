@@ -1,3 +1,5 @@
+'use client';
+
 import { useState } from "react";
 import { Progress } from "@/components/ui/progress";
 import { Dialog, DialogTrigger, DialogContent } from "@/components/ui/dialog";
@@ -21,7 +23,7 @@ export default function TaskPageList({ pageList, setPageList, onEdit, onDelete }
                     const total = page.end - page.start + 1;
                     const completedCount = page.completed.length;
                     const percent = total > 0 ? Math.round((completedCount / total) * 100) : 0;
-                    const barColor = percent === 100 ? "#6ee7b7" : "#99f6e4"; // 完了なら緑、未完了なら水色
+                    const barColor = percent === 100 ? "#6ee7b7" : "#99f6e4"; 
                     return (
                         <div
                             key={page.id}

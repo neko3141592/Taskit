@@ -3,36 +3,35 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import Link from 'next/link';
-import { useFirebaseUser } from "@/hooks/use-firebase-user";
+import { useSession } from "next-auth/react"; // NextAuthのuseSessionをインポート
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import SubjectAddDialog from '@/components/dashboard/subjects/subject-add-dialog';
 import { Book, ChevronRight, Loader2, Hourglass } from 'lucide-react';
 import { Input } from '@/components/ui/input';
-import { AlertCircle, CircleCheckBig } from 'lucide-react';
+import { CircleCheckBig } from 'lucide-react';
 
 type SubjectWithCount = Subject & { incompleteTaskCount?: number, completedTaskCount?: number };
 
 export default function Subjects() {
-    const user = useFirebaseUser();
+    const { data: session, status } = useSession();
     const [subjects, setSubjects] = useState<SubjectWithCount[] | null>(null);
     const [filteredSubjects, setFilteredSubjects] = useState<SubjectWithCount[] | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string>('');
 
-
     const fetchSubjects = async () => {
-            if (!user) return;
-            setLoading(true);
-            try {
-                const res = await axios.get<APIResponse<SubjectWithCount[] | null>>(`/api/subjects?userId=${user.uid}`);
-                setSubjects(res.data.data);
-                setFilteredSubjects(res.data.data);
-            } catch (error) {
-                console.error(error);
-                setError('エラーが発生しました');
-            } finally {
-                setLoading(false);
-            }
+        if (!session?.user?.id) return;
+        setLoading(true);
+        try {
+            const res = await axios.get<APIResponse<SubjectWithCount[] | null>>(`/api/subjects?userId=${session.user.id}`);
+            setSubjects(res.data.data);
+            setFilteredSubjects(res.data.data);
+        } catch (error) {
+            console.error(error);
+            setError('エラーが発生しました');
+        } finally {
+            setLoading(false);
+        }
     };
 
     const filterSubjects = (query: string) => {
@@ -47,8 +46,10 @@ export default function Subjects() {
     }
 
     useEffect(() => {
-        fetchSubjects();
-    }, [user]);
+        if (status === "authenticated") {
+            fetchSubjects();
+        }
+    }, [session, status]);
 
     if (loading) {
         return (

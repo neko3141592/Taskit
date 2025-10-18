@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import axios from "axios";
-import { useFirebaseUser } from "@/hooks/use-firebase-user";
 import  AddPageDialog  from "@/components/dashboard/tasks/task-page-add-dialog";
 import TaskPageList from "@/components/dashboard/tasks/task-page-list";
 
@@ -13,7 +12,6 @@ type TaskPageProps = {
 }
 
 export default function TaskPage(props: TaskPageProps) {
-    const user = useFirebaseUser();
     const [pageInput, setPageInput] = useState({
         title: '',
         start: '',
@@ -62,9 +60,6 @@ export default function TaskPage(props: TaskPageProps) {
         if (!validatePageInput()) {
             return;
         }
-        if (!user) {
-            return;
-        }
         const newPage: TaskPage = {
             id: Math.random().toString(36).slice(2),
             title: pageInput.title,
@@ -78,10 +73,6 @@ export default function TaskPage(props: TaskPageProps) {
         try {
             await axios.patch(`/api/tasks/${taskId}`, {
                 pages: [...pageList, newPage]
-            }, { 
-                headers: {
-                    'Authorization': `Bearer ${await user.getIdToken()}`
-                }
             });
             toast.success("ページを追加しました");
             setPageInput({ title: '', start: '', end: '', completed: [] });
@@ -111,10 +102,6 @@ export default function TaskPage(props: TaskPageProps) {
         try {
             await axios.patch(`/api/tasks/${taskId}`, {
                 pages: updatedPages
-            }, { 
-                headers: {
-                    'Authorization': `Bearer ${await user.getIdToken()}`
-                }
             });
             toast.success("ページを更新しました");
         } catch (error) {
@@ -125,18 +112,11 @@ export default function TaskPage(props: TaskPageProps) {
     };
 
     const handleDeletePage = async (pageId: string) => {
-        if (!user) {
-            return;
-        }
         const updatedPages = pageList.filter((page) => page.id !== pageId);
         setPageList(updatedPages);
         try {
             await axios.patch(`/api/tasks/${taskId}`, {
                 pages: updatedPages
-            }, { 
-                headers: {
-                    'Authorization': `Bearer ${await user.getIdToken()}`
-                }
             });
             toast.success("ページを削除しました");
         } catch (error) {

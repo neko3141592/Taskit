@@ -1,16 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
-import { verifyFirebaseToken } from '@/lib/auth';
-import prisma from '@/lib/prisma';
-import type { Prisma, TaskStatus } from '@/generated/prisma/client';
-
+import { prisma } from '@/lib/prisma';
+import { auth } from "@/../auth";
 
 
 export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
-    const { ok, error, uid } = await verifyFirebaseToken(req);
-    if (!ok) {
+
+    const session = await auth();
+    if (!session) {
         return NextResponse.json({ 
             status: 'error',
-            message: error
+            message: 'Unauthorized'
         }, { status: 401 });
     }
     const { id } = await params;
@@ -21,18 +20,18 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
 
     return NextResponse.json({
         status: 'success',
-        message: 'タスクの取得に成功しました',
+        message: 'success to get task',
         data: task
     }, { status: 200 });
 }
 
 
 export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
-    const { ok, error, uid } = await verifyFirebaseToken(req);
-    if (!ok) {
+    const session = await auth();
+    if (!session) {
         return NextResponse.json({ 
             status: 'error',
-            message: error
+            message: 'Unauthorized'
         }, { status: 401 });
     }
     const { id } = await params;

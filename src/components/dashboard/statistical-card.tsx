@@ -1,12 +1,10 @@
-'use client'
 
-import useSWR from "swr";
+
+import { auth } from "@/../auth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { CheckCircle, ListTodo } from "lucide-react"
 import { Progress } from "@/components/ui/progress"
-import { useFirebaseUser } from "@/hooks/use-firebase-user";
-import Spinner from "../ui/spinner";
-import axios from "axios";
+import { cookies } from "next/headers";
 
 type CountResponse = {
     totalTasks: number;
@@ -16,29 +14,15 @@ type CountResponse = {
     completionRate: number;
 }
 
-const fetcher = async ([url, token]: [string, string]) => {
-    const res = await axios.get<APIResponse<CountResponse>>(url, {
-        headers: { Authorization: `Bearer ${token}` }
-    });
-    return res.data.data;
-};
+export default async function StatisticalCard() {
+    const session = await auth();
+    const cookieStore = await cookies();
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/tasks/count?userId=${session?.user?.id}`, { cache: 'no-store', headers: { cookie: cookieStore.toString() } });
+    const data: APIResponse<CountResponse> = await res.json();
+    const stats = data.data;
 
-export default function StatisticalCard() {
-    const user = useFirebaseUser();
-
-    const shouldFetch = !!user;
-
-    const { data: stats, error, isLoading } = useSWR(
-        shouldFetch ? ["/api/tasks/count", "token"] : null,
-        async ([url]) => {
-            const token = await user!.getIdToken();
-            return fetcher([url, token]);
-        },
-        { revalidateOnFocus: false }
-    );
-
-    if (!shouldFetch || isLoading || !stats) {
-        return <Spinner className="lex justify-center items-center min-h-[160px] w-full"/>;
+    if (!stats) {
+        return <div>データ取得エラー</div>;
     }
 
     return (

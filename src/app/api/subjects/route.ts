@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import prisma from '@/lib/prisma';
-import type { Prisma, TaskStatus } from '@/generated/prisma/client';
-import { verifyFirebaseToken } from "@/lib/auth";
+import { prisma } from '@/lib/prisma';
+import { auth } from '@/../auth';
 
 export async function GET(req: NextRequest) {
     const userId = req.nextUrl.searchParams.get('userId');
@@ -54,11 +53,11 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-    const { ok, uid, error } = await verifyFirebaseToken(req);
-    if (!ok) {
+    const session = await auth();
+    if (!session?.user?.id) {
         return NextResponse.json({ 
             status: 'error',
-            message: error
+            message: '認証されていません'
         }, { status: 401 });
     }
 
@@ -76,7 +75,7 @@ export async function POST(req: NextRequest) {
         const newSubject = await prisma.subject.create({
             data: {
                 name: name.trim(),
-                userId: uid!,
+                userId: session.user.id,
                 color: color
             }
         });

@@ -1,0 +1,25 @@
+# docker-compose.yml
+services:
+  taskit-next-app:
+    container_name: taskit-next-app
+    build: .
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+  db:
+    image: postgres:15
+    container_name: taskit-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: yudai998244353
+      POSTGRES_DB: taskit
+    ports:
+      - "5432:5432"
+    volumes:
+      - taskit-postgres-data:/var/lib/postgresql/data
+volumes:
+  taskit-postgres-data:

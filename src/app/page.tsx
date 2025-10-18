@@ -7,6 +7,16 @@ import { CheckCircle2, Users, Zap, Calendar, BarChart3, Shield } from 'lucide-re
 export default function Home() {
   return (
     <div>
+      <header className="fixed top-0 left-0 w-full z-50 border border-gray-200 h-[60px] rounded mb-4 bg-white flex items-center justify-between px-6">
+        <div className="flex items-center gap-2">
+          <span className="text-xl font-bold text-gray-800">Taskit</span>
+        </div>
+        <div>
+          <Link href="/login" className="px-4 py-2 border border-gray-300 rounded-sm hover:bg-gray-100 transition">
+            ログイン
+          </Link>
+        </div>
+      </header>
       <main className="min-h-screen">
         <div className="flex justify-center items-center min-h-[400px] bg-gradient-to-br">
           <div className="md:flex items-center p-6 max-w-6xl mx-auto w-full">
@@ -14,8 +24,8 @@ export default function Home() {
               <h1 className="text-4xl font-bold text-gray-800">学生のための学習管理アプリ</h1>
               <p className="text-gray-500 pt-4 text-lg">効率的なタスク管理を、Taskitで。</p>
               <div className="flex mt-6 gap-2">
-                <Link href='/register' className="px-4 py-2 text-white bg-black rounded-sm hover:bg-gray-800 transition">今すぐ始める</Link>
-                <Link href='/login' className="px-4 py-2 border border-gray-300 rounded-sm hover:bg-gray-100 transition">ログイン</Link>
+                <Link href='/login' className="px-4 py-2 text-white bg-black rounded-sm hover:bg-gray-800 transition">今すぐ始める</Link>
+                {/* <Link href='/login' className="px-4 py-2 border border-gray-300 rounded-sm hover:bg-gray-100 transition">ログイン</Link> */}
               </div>
             </div>
             <div className="flex-1 flex justify-center items-center mt-8 md:mt-0">

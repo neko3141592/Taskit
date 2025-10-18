@@ -2,18 +2,17 @@
 
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
-import { useFirebaseUser } from '@/hooks/use-firebase-user';
 import axios from 'axios';
 import TaskTitle from '@/components/dashboard/tasks/task-title';
 import TaskPage from '@/components/dashboard/tasks/task-page';
 import TaskDetails from '@/components/dashboard/tasks/task-details';
 import Spinner from '@/components/ui/spinner';
+import { useSession } from "next-auth/react"; 
 
 
 
 export default function Task() {
-
-    const user = useFirebaseUser();
+    const { data: user } = useSession();
     const { id } = useParams();
     const [task, setTask] = useState<Task | null>(null);
     const [loading, setLoading] = useState(true);
@@ -24,13 +23,7 @@ export default function Task() {
             setLoading(true);
             try {
                 if (!id || !user) return;
-                const res = await axios.get<APIResponse<Task | null>>(`/api/tasks/${id}`, 
-                    {
-                        headers: {
-                            Authorization: `Bearer ${await user?.getIdToken()}`,
-                        },
-                    }
-                );
+                const res = await axios.get<APIResponse<Task | null>>(`/api/tasks/${id}`, );
                 setTask(res.data.data);
 
             } catch (error) {

@@ -1,5 +1,5 @@
 'use client'
-
+import { useEffect, useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import {
@@ -18,7 +18,6 @@ import {
     GraduationCap, LogOut, MoreHorizontal
 } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { useFirebaseUser } from "@/hooks/use-firebase-user"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
     DropdownMenu,
@@ -27,9 +26,9 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
-import { getAuth, signOut } from "firebase/auth"; // Firebaseのログアウト機能をインポート
+import { signOut, useSession } from "next-auth/react";
+import axios from "axios"
 
-// --- 型定義とデータ定義は変更なし ---
 interface SidebarItem {
     title: string;
     url: string;
@@ -40,7 +39,6 @@ interface SidebarSection {
     items: SidebarItem[];
 }
 const sidebarSections: SidebarSection[] = [
-    // ... (前回のコードと同じなので省略)
     {
         label: "基本機能",
         items: [
@@ -70,16 +68,14 @@ const sidebarSections: SidebarSection[] = [
     }
 ];
 
-
 export default function AppSidebar() {
     const pathname = usePathname();
-    const user = useFirebaseUser();
+    const { data: session } = useSession();
+    const user = session?.user;
 
     const handleLogout = async () => {
-        const auth = getAuth();
         try {
-            await signOut(auth);
-            window.location.href = '/login'; 
+            await signOut({ callbackUrl: "/login" });
         } catch (error) {
             console.error("ログアウトエラー", error);
         }
@@ -132,16 +128,13 @@ export default function AppSidebar() {
                             <Button variant="ghost" className="w-full justify-start h-auto px-1 py-2">
                                 <div className="flex items-center gap-3 w-full">
                                     <Avatar className="h-8 w-8">
-                                        <AvatarImage src={user?.photoURL ?? undefined} alt={user?.displayName ?? "ユーザー"} />
-                                        <AvatarFallback>{user?.displayName?.charAt(0) ?? 'U'}</AvatarFallback>
+                                        <AvatarImage src={user.image ?? undefined} alt={user.name ?? ""} />
+                                        <AvatarFallback>{user.name?.charAt(0) ?? ''}</AvatarFallback>
                                     </Avatar>
                                     <div className="flex flex-col items-start min-w-0">
-                                        <span className="text-sm font-medium truncate">{user?.displayName ?? "User Name"}</span>
+                                        <span className="text-sm font-medium truncate">{user.name ?? ''}</span>
                                         <span className="text-xs text-muted-foreground truncate">
-                                        {
-                                            user?.email ? user.email.length > 24 ? user.email.substring(0, 21) + "..." : user.email
-                                            : ""
-                                        }       
+                                            {user.email ? user.email.length > 24 ? user.email.substring(0, 21) + "..." : user.email : ""}
                                         </span>
                                     </div>
                                     <MoreHorizontal className="h-5 w-5 ml-auto text-muted-foreground" />

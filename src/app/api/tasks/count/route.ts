@@ -1,27 +1,28 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyFirebaseToken } from '@/lib/auth';
-import prisma from '@/lib/prisma';
-import type { Prisma, TaskStatus } from '@/generated/prisma/client';
+import { prisma } from '@/lib/prisma';
+import type { Prisma } from '@/generated/prisma/client';
+import { auth } from '@/../auth';
 
 export async function GET(req: NextRequest) {
-    const { ok, uid, error } = await verifyFirebaseToken(req);
-    if (!ok) {
+    const session = await auth();
+    if (!session || !session.user?.id) {
         return NextResponse.json({ 
             status: 'error',
-            message: error
+            message: '認証されていません'
         }, { status: 401 });
     }
+
+    const uid = session.user.id;
 
     const searchParams = req.nextUrl.searchParams;
     const dueFrom = searchParams.get('dueFrom');
     const dueTo = searchParams.get('dueTo');
 
-
     const dueDateFilter: Prisma.TaskWhereInput['dueDate'] = {};
     if (dueFrom) dueDateFilter.gte = new Date(dueFrom);
     if (dueTo) dueDateFilter.lte = new Date(dueTo);
 
-    const where: Prisma.TaskWhereInput = { userId: uid! };
+    const where: Prisma.TaskWhereInput = { userId: uid };
     if (dueFrom || dueTo) where.dueDate = dueDateFilter;
 
     const totalTasks = await prisma.task.count({ where });
@@ -30,17 +31,14 @@ export async function GET(req: NextRequest) {
         where: { ...where, status: 'COMPLETED' }
     });
 
-    // 未着手タスク数
     const notStartedTasks = await prisma.task.count({
         where: { ...where, status: 'NOT_STARTED' }
     });
 
-    // 進行中タスク数
     const inProgressTasks = await prisma.task.count({
         where: { ...where, status: 'IN_PROGRESS' }
     });
 
-    // 完了率
     const completionRate = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
 
     return NextResponse.json({

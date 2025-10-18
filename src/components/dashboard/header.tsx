@@ -1,9 +1,7 @@
 import { Plus, Search } from "lucide-react";
-import { getAuth, signOut } from "firebase/auth";
-import { auth } from "@/lib/firebase";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
-import { useFirebaseUser } from "@/hooks/use-firebase-user";
+import { signOut } from "next-auth/react";
 import {
     Dialog,
     DialogTrigger,
@@ -15,10 +13,8 @@ import CreateTaskModal from "./create-task-modal";
 import { Input } from "../ui/input";
 
 export default function Header() {
-    const user = useFirebaseUser();
-
     const handleLogout = async () => {
-        await signOut(auth);
+        await signOut({ callbackUrl: "/login" });
     };
 
     return (
@@ -68,6 +64,8 @@ export default function Header() {
                     </DialogTrigger>
                     <CreateTaskModal />
                 </Dialog>
+                {/* ログアウトボタン例（必要なら追加） */}
+                {/* <Button onClick={handleLogout} variant="outline" size="sm">ログアウト</Button> */}
             </div>
         </header>
     );

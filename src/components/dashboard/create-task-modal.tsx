@@ -28,16 +28,16 @@ import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { ja } from "date-fns/locale";
 import { Calendar } from "@/components/ui/calendar";
-import { useFirebaseUser } from "@/hooks/use-firebase-user";
 import { useSubject } from "@/hooks/use-subject";
 import { toast } from "sonner"
+import { useSession } from "next-auth/react";
 
 import axios from "axios";
 
 
 export default function CreateTaskModal() {
-    const user = useFirebaseUser();
-    const { subjects } = useSubject(user?.uid);
+    const { data: session } = useSession();
+    const { subjects } = useSubject(session?.user?.id || "");
 
     const [isLoading, setIsLoading] = useState(false);
     const [formData, setFormData] = useState({
@@ -87,12 +87,8 @@ export default function CreateTaskModal() {
                 const res = await axios.post<APIResponse<Task>>('/api/tasks', {
                     ...formData,
                     tags,
-                    userId: user?.uid,
+                    userId: session?.user?.id,
                     dueDate: formData.dueDate?.toISOString(),
-                }, {
-                    headers: {
-                        Authorization: `Bearer ${await user?.getIdToken()}`,
-                    },
                 });
                 setFormData({
                     title: "",

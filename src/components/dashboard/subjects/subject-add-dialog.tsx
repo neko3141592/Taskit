@@ -6,13 +6,11 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { Plus } from "lucide-react";
 import { useState } from "react";
 import axios from "axios";
 import { toast } from "sonner"
-import { useFirebaseUser } from "@/hooks/use-firebase-user";
+import { useSession } from "next-auth/react";
 
 const COLORS = [
     "#ff0000", "#ff4d4d", "#ff8080", "#ffb3b3",
@@ -34,11 +32,11 @@ type SubjectAddDialogProps = {
 
 export default function SubjectAddDialog({ onAdd }: SubjectAddDialogProps) {
 
-    const user = useFirebaseUser();
+    const { data: user } = useSession();
     const [name, setName] = useState("");
     const [color, setColor] = useState(COLORS[0]);
     const [loading, setLoading] = useState(false);
-    const [open, setOpen] = useState(false); // 追加
+    const [open, setOpen] = useState(false); 
 
     const validate = () => {
         if (name.trim() === "") {
@@ -61,8 +59,7 @@ export default function SubjectAddDialog({ onAdd }: SubjectAddDialogProps) {
         setLoading(true);
         try {
             await axios.post("/api/subjects", 
-                { name, color },
-                { headers: { "Authorization": `Bearer ${await user.getIdToken()}` } }
+                { name, color }
             );
             setName("");
             setColor(COLORS[0]);
