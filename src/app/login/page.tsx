@@ -27,8 +27,8 @@ export default function Login() {
         <div
             className="min-h-screen flex items-center justify-center p-4 bg-white"
         >
-            <div className="w-full max-w-md animate-fade-in">
-                <div className="bg-white rounded-xl shadow-none border border-gray-300">
+            <div className="w-full max-w-md ">
+                <div className="bg-white rounded-sm shadow-none border border-gray-300">
                     <div className="px-8 py-8 border-b border-gray-200">
                         <h1 className="text-xl font-bold tracking-tight flex items-center gap-2 text-black">
                             ログインまたはサインアップ
@@ -45,7 +45,7 @@ export default function Login() {
                             onClick={handleGoogleAuth}
                             disabled={loading}
                             type="button"
-                            className="w-full flex items-center justify-center gap-3 bg-white border border-black text-black py-3 rounded-lg font-semibold  transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="w-full flex items-center justify-center gap-3 bg-white border border-black text-black py-3 rounded-sm font-semibold  transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             <svg className="w-6 h-6" viewBox="0 0 24 24">
                                 <path

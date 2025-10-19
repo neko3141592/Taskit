@@ -19,13 +19,11 @@ export default function Header() {
 
     return (
         <header className="border border-gray-200 h-[60px] rounded mb-4 bg-white flex items-center justify-between px-6">
-            {/* 左側：ロゴやタイトル */}
             <div className="flex items-center gap-3">
                 <SidebarTrigger />
                 <span className="font-bold text-lg text-gray-700 ">Taskit</span>
             </div>
             <div className="flex items-center gap-2">
-                {/* 検索ダイアログ */}
                 <Dialog>
                     <DialogTrigger asChild>
                         <Button
@@ -47,7 +45,6 @@ export default function Header() {
                                 placeholder="キーワードを入力"
                                 className="mt-2"
                             />
-                            {/* 検索結果表示などはここに追加可能 */}
                         </form>
                     </DialogContent>
                 </Dialog>
@@ -64,8 +61,6 @@ export default function Header() {
                     </DialogTrigger>
                     <CreateTaskModal />
                 </Dialog>
-                {/* ログアウトボタン例（必要なら追加） */}
-                {/* <Button onClick={handleLogout} variant="outline" size="sm">ログアウト</Button> */}
             </div>
         </header>
     );
