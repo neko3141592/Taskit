@@ -91,9 +91,6 @@ export default function TaskPage(props: TaskPageProps) {
     }
 
     const handleEditPage = async (updatedPage: TaskPage) => {
-        if (!user) {
-            return;
-        }
         updatedPage = deleteOutOfIndex(updatedPage);
         const updatedPages = pageList.map((page) => 
             page.id === updatedPage.id ? updatedPage : page

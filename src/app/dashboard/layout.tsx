@@ -1,4 +1,4 @@
-import { auth } from "@/../auth";
+import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import AppSidebar from "@/components/dashboard/sidebar";

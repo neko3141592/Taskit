@@ -23,7 +23,7 @@ export default function Task() {
             setLoading(true);
             try {
                 if (!id || !user) return;
-                const res = await axios.get<APIResponse<Task | null>>(`/api/tasks/${id}`, );
+                const res = await axios.get<APIResponse<Task | null>>(`/api/tasks/${id}`);
                 setTask(res.data.data);
 
             } catch (error) {

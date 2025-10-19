@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from '@/lib/prisma';
-import { auth } from '@/../auth';
+import { auth } from '@/auth';
 
 export async function GET(req: NextRequest) {
     const userId = req.nextUrl.searchParams.get('userId');

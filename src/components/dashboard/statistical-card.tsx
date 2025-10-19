@@ -1,6 +1,6 @@
 
 
-import { auth } from "@/../auth";
+import { auth } from "@/auth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { CheckCircle, ListTodo } from "lucide-react"
 import { Progress } from "@/components/ui/progress"
