@@ -65,6 +65,32 @@ export default function CreateTaskModal() {
         setTags(tags.filter(t => t !== tag));
     };
 
+    const handleGenerateTag = async () => {
+        if (!formData.title || !formData.description) {
+            toast.error("タイトルと説明を入力してください");
+            return;
+        }
+        setIsLoading(true);
+        try {
+            const res = await axios.get<APIResponse<string[]>>('/api/generate/tags', {
+                params: {
+                    title: formData.title,
+                    description: formData.description,
+                    existingTags: tags.join(','),
+                }
+            });
+            const generatedTags = res.data.data;
+            const newTags = generatedTags.filter(tag => !tags.includes(tag));
+            setTags([...tags, ...newTags]);
+            toast.success("タグを生成しました");
+        } catch (error) {
+            console.error("タグの生成中にエラーが発生しました:", error);
+            toast.error("タグの生成に失敗しました");
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     const validateForm = () => {
         if (!formData.title.trim()) {
             toast.error("タイトルを入力してください");
@@ -162,8 +188,9 @@ export default function CreateTaskModal() {
                     </Button>
                     <Button
                         type="button"
-                        onClick={handleAddTag}
+                        onClick={handleGenerateTag}
                         className="bg-teal-500 hover:bg-teal-600 "
+                        disabled={isLoading}
                     >
                         <Paintbrush className="h-4 w-4 text-white" />
                     </Button>
