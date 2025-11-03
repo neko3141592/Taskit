@@ -29,25 +29,31 @@ import { format } from "date-fns";
 import { ja } from "date-fns/locale";
 import { Calendar } from "@/components/ui/calendar";
 import { useSubject } from "@/hooks/use-subject";
-import { toast } from "sonner"
+import { toast } from "sonner";
 import { useSession } from "next-auth/react";
 
 import axios from "axios";
 
-export default function CreateTaskModal() {
+type UpdateTaskDialogProps = {
+    task: Task;
+}
+
+export default function UpdateTaskDialog({ task }: UpdateTaskDialogProps) {
     const { data: session } = useSession();
     const { subjects } = useSubject(session?.user?.id || "");
-    console.log("Available subjects:", subjects, session);
+    console.log("Available subjects:", subjects, session?.user?.id);
     const [isLoading, setIsLoading] = useState(false);
     const [formData, setFormData] = useState({
-        title: "",
-        description: "",
-        status: "NOT_STARTED",
-        subjectId: "",
-        dueDate: undefined as Date | undefined,
+        title: task.title,
+        description: task.description,
+        status: task.status,
+        subjectId: task.subjectId,
+        dueDate: task.dueDate ? new Date(task.dueDate) : undefined,
     });
     const [tagInput, setTagInput] = useState("");
-    const [tags, setTags] = useState<string[]>([]);
+    const [tags, setTags] = useState<string[]>(
+        task.tags?.map((tag) => tag.name) ?? []
+    );
 
     const handleChange = (field: string, value: any) => {
         setFormData(prev => ({ ...prev, [field]: value }));
@@ -106,10 +112,10 @@ export default function CreateTaskModal() {
         e.preventDefault();
 
         if (!validateForm()) return;
-        
+        console.log("Submitting form data:", { ...formData, tags });
         setIsLoading(true);
             try {
-                const res = await axios.post<APIResponse<Task>>('/api/tasks', {
+                const res = await axios.patch<APIResponse<Task>>(`/api/tasks/${task.id}`, {
                     ...formData,
                     tags,
                     userId: session?.user?.id,
@@ -122,10 +128,10 @@ export default function CreateTaskModal() {
                     subjectId: "",
                     dueDate: undefined,
                 });
-                toast.success("タスクを作成しました");
+                toast.success("タスクを更新しました");
                 setTags([]);
             } catch (error) {
-                console.error("タスクの作成中にエラーが発生しました:", error);
+                console.error("タスクの更新中にエラーが発生しました:", error);
             } finally {
                 setIsLoading(false);
             }
@@ -136,7 +142,7 @@ export default function CreateTaskModal() {
         <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-xl">
             <ListTodo className="h-6 w-6" />
-                新規タスク
+                タスクの編集
             </DialogTitle>
         </DialogHeader>
         
@@ -304,12 +310,12 @@ export default function CreateTaskModal() {
                 {isLoading ? (
                 <>
                     <Clock className="h-4 w-4 animate-spin" />
-                    作成中...
+                    更新中...
                 </>
                 ) : (
                 <>
                     <CheckIcon className="h-4 w-4" />
-                    作成
+                    完了
                 </>
                 )}
             </Button>

@@ -1,8 +1,6 @@
-import OpenAI from 'openai';
-
 export async function generateTags(title: string, description: string, existingTags: string[] = []): Promise<string[]> {
     const prompt = `
-        以下のタスクのタイトルと説明から、関連するタグを3~5個生成してください。他のタスクで使われているタグも渡すので、それも参考にしてください。
+        以下のタスクのタイトルと説明から、関連するタグを日本語で3~5個生成してください。他のタスクで使われているタグも渡すので、それも参考にしてください。
         タイトル: ${title},
         説明: ${description},
         他のタスクで使われているタグ: ${existingTags.join(', ')}
@@ -21,7 +19,7 @@ export async function generateTags(title: string, description: string, existingT
                 { role: 'user', content: prompt }
             ],
             max_tokens: 100,
-            temperature: 0.7
+            temperature: 0.2
         })
     });
 

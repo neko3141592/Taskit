@@ -138,7 +138,7 @@ export default function TaskPage(props: TaskPageProps) {
                     onEdit={handleEditPage}
                 />
             </CardContent>
-            <CardFooter className="absolute bottom-4 right-4 p-0">
+            <CardFooter className="absolute bottom-4 right-4 p-0 z-50">
                 <AddPageDialog
                     onAdd={handleAddPage}
                     isLoading={isLoading}

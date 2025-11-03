@@ -8,6 +8,7 @@ export function useSubject (userId?: string) {
     useEffect(() => {
         if (!userId) return;
         setLoading(true);
+        console.log("Fetching subjects for userId:", userId);
 
         const fetchSubjects = async () => {
             try {

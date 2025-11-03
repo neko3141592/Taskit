@@ -46,7 +46,7 @@ export default function TaskCards(props: taskCardsProps) {
                             )}
                         </div>
                         {displayTags && (
-                            <div className="flex space-x-2 pt-2">
+                            <div className="flex space-x-2 pt-2 overflow-x-auto">
                                 {task.tags?.map((tag) => (
                                     <Badge key={tag.name} className="mr-2 bg-teal-500 h-6">#{tag.name}</Badge>
                                 ))}

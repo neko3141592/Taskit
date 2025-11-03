@@ -8,6 +8,7 @@ import TaskPage from '@/components/dashboard/tasks/task-page';
 import TaskDetails from '@/components/dashboard/tasks/task-details';
 import Spinner from '@/components/ui/spinner';
 import { useSession } from "next-auth/react"; 
+import TaskSuggest from '@/components/dashboard/tasks/task-suggest';
 
 
 
@@ -16,7 +17,6 @@ export default function Task() {
     const { id } = useParams();
     const [task, setTask] = useState<Task | null>(null);
     const [loading, setLoading] = useState(true);
-
     
     useEffect(() => {
         const fetchTask = async () => {
@@ -33,7 +33,7 @@ export default function Task() {
             }
         }
         fetchTask();
-    }, [id, user]);
+    }, [id]);
 
     if (loading || !user || !id) {
         return (
@@ -52,7 +52,7 @@ export default function Task() {
                         <TaskPage pages={task.pages} taskId={task.id} />
                     </div>
                     <div className=" md:w-1/3 mt-4 md:mt-0">
-                        <TaskDetails task={task} />
+                        <TaskSuggest />
                     </div>
                     
                 </div>

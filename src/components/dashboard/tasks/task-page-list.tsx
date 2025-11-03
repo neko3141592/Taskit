@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Progress } from "@/components/ui/progress";
 import { Dialog, DialogTrigger, DialogContent } from "@/components/ui/dialog";
-import { Meh } from "lucide-react";
+import { Meh, ChevronRight } from "lucide-react";
 import TaskPageEditDialog from "./task-page-edit-dialog";
 
 type TaskPageListProps = {
@@ -18,33 +18,42 @@ export default function TaskPageList({ pageList, setPageList, onEdit, onDelete }
 
     return (
         pageList.length > 0 ? (
-            <div className="space-y-4  overflow-y-auto max-h-[380px]">
+            <div className="space-y-3 overflow-y-auto max-h-[380px] pr-2">
                 {pageList.map(page => {
                     const total = page.end - page.start + 1;
                     const completedCount = page.completed.length;
                     const percent = total > 0 ? Math.round((completedCount / total) * 100) : 0;
-                    const barColor = percent === 100 ? "#6ee7b7" : "#99f6e4"; 
+                    const barColor = percent === 100 ? "#10b981" : "#06b6d4"; 
                     return (
                         <div
                             key={page.id}
-                            className="flex flex-col gap-2 p-2 rounded-sm border  hover:bg-gray-50 transition-colors  px-4 py-3  relative"
-                            style={{
-                                background: `linear-gradient(90deg, ${barColor} ${percent}%, #f3f4f6 ${percent}%)`
-                            }}
+                            className="group flex flex-col gap-3 p-4 rounded-lg border border-gray-200 hover:border-gray-300 hover:bg-gradient-to-r hover:from-slate-50 hover:to-transparent transition-all duration-200 cursor-pointer relative overflow-hidden"
                         >
+                            <div
+                                className="absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                                style={{
+                                    background: `linear-gradient(135deg, ${barColor}08 0%, transparent 100%)`
+                                }}
+                            />
+                            
                             <Dialog open={editOpenId === page.id} onOpenChange={open => setEditOpenId(open ? page.id : null)}>
                                 <DialogTrigger asChild>
                                     <div
-                                        className="flex items-center cursor-pointer bg-transparent"
+                                        className="flex items-center justify-between relative z-10"
                                         onClick={() => setEditOpenId(page.id)}
                                     >
                                         <div className="flex-1 min-w-0">
-                                            <h4 className="font-medium text-sm text-gray-900 truncate">{page.title || `${page.start}〜${page.end}ページ`}</h4>
-                                            <p className="text-xs text-gray-500">
+                                            <h4 className="font-semibold text-sm text-gray-900 truncate group-hover:text-gray-900 transition-colors">{page.title || `${page.start}〜${page.end}ページ`}</h4>
+                                            <p className="text-xs text-gray-500 mt-1">
                                                 {page.start}〜{page.end}ページ
                                             </p>
                                         </div>
-                                        <p className="mr-3 text-sm  px-2 rounded-sm">{percent}%</p>
+                                        <div className="flex items-center gap-3 ml-4">
+                                            <div className="text-right">
+                                                <p className="text-sm font-semibold text-gray-900">{percent}%</p>
+                                            </div>
+                                            <ChevronRight className="h-5 w-5 text-gray-400 group-hover:text-gray-600 transition-colors" />
+                                        </div>
                                     </div>
                                 </DialogTrigger>
                                 <DialogContent className="sm:max-w-[400px]">
@@ -57,19 +66,26 @@ export default function TaskPageList({ pageList, setPageList, onEdit, onDelete }
                                     />
                                 </DialogContent>
                             </Dialog>
+
+                            <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden relative z-10">
+                                <div
+                                    className="h-full rounded-full transition-all duration-300"
+                                    style={{
+                                        width: `${percent}%`,
+                                        background: `linear-gradient(90deg, ${barColor}, ${barColor}dd)`
+                                    }}
+                                />
+                            </div>
                         </div>
                     );
                 })}
-                {pageList.length > 5 && (
-                    <div className="absolute bottom-0 left-0 w-full flex flex-col items-center pointer-events-none">
-                        {/* フェードエフェクト */}
-                        <div className="w-full h-8 bg-gradient-to-t from-gray-100 to-transparent" />
-                        {/* ヒントテキスト */}
-                        <div className="text-xs text-gray-400 mb-2 -mt-6 z-10">
-                            ▼
+                {/* {pageList.length > 5 && (
+                    <div className="flex justify-center pt-2 pointer-events-none">
+                        <div className="text-xs text-gray-400">
+                            ▼ スクロール可能
                         </div>
                     </div>
-        )}
+                )} */}
             </div>
         ) : (
             <div className="flex flex-col items-center justify-center h-[180px] text-gray-400">
