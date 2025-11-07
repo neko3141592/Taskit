@@ -37,7 +37,6 @@ import axios from "axios";
 export default function CreateTaskModal() {
     const { data: session } = useSession();
     const { subjects } = useSubject(session?.user?.id || "");
-    console.log("Available subjects:", subjects, session);
     const [isLoading, setIsLoading] = useState(false);
     const [formData, setFormData] = useState({
         title: "",

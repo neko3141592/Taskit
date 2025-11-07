@@ -9,7 +9,6 @@ services:
       - /app/node_modules
     environment:
       - CHOKIDAR_USEPOLLING=true
-    command: sh -c "npx prisma migrate deploy && npm run dev"
   db:
     image: postgres:15
     container_name: taskit-postgres

@@ -124,7 +124,7 @@ export default function TaskPage(props: TaskPageProps) {
     };
 
     return (
-        <Card className="w-full shadow-none min-h-[350px] relative">
+        <Card className="w-full shadow-none min-h-[350px] h-full relative">
             <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                     登録されているページ

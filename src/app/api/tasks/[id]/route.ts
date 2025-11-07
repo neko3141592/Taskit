@@ -13,6 +13,7 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
             message: 'Unauthorized'
         }, { status: 401 });
     }
+
     const { id } = await params;
     const task = await prisma.task.findUnique({
         where: { id },

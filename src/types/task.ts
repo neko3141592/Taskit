@@ -57,3 +57,25 @@ interface TaskPage {
     end: number;
     completed: number[];
 }
+
+interface Sort {
+    sortKey: string;
+    sortOrder: 'asc' | 'desc';
+}
+
+interface Filter {
+    status?: TaskStatus;
+    subjectId?: string;
+    testId?: string;
+    name?: string;
+}
+
+interface Notification {
+    id: string;
+    title: string;
+    message: string;
+    isRead: boolean;
+    userId: string;
+    link?: string;
+    createdAt: string;
+}

@@ -1,7 +1,8 @@
+'use client'
+
 import { Plus, Search } from "lucide-react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { Button } from "@/components/ui/button";
-import { signOut } from "next-auth/react";
+import NotificationsDialog from "./notifications-dialog";
 import {
     Dialog,
     DialogTrigger,
@@ -9,6 +10,13 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { signOut } from "next-auth/react";
+import {
+    Popover,
+    PopoverTrigger,
+    PopoverContent,
+} from "@/components/ui/popover";
 import CreateTaskModal from "./create-task-modal";
 import { Input } from "../ui/input";
 
@@ -18,12 +26,13 @@ export default function Header() {
     };
 
     return (
-        <header className="border border-gray-200 h-[60px] rounded mb-4 bg-white flex items-center justify-between px-6">
+        <header className="relative border border-gray-200 h-[60px] rounded mb-4 bg-white flex items-center justify-between px-6">
             <div className="flex items-center gap-3">
                 <SidebarTrigger />
                 <span className="font-bold text-lg text-gray-700 ">Taskit</span>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 relative">
+                <NotificationsDialog />
                 <Dialog>
                     <DialogTrigger asChild>
                         <Button

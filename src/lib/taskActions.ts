@@ -139,11 +139,11 @@ export async function deleteTaskById(id: string): Promise<void> {
     }
 }
 
-export async function suggestNextTasks(userId: string, currentTask: Task): Promise<string[]> {
+export async function suggestNextTasks(userId: string, currentTask: Task): Promise<Task[]> {
     try {
         const { tasks } = await getTasks({ userId, statusParam: 'NOT_STARTED+IN_PROGRESS', sort: 'dueDate', order: 'asc', limit: 10 });
         const prompt = `
-            現在のタスクの情報を与えるので、次に実行するタスクを提案してください。提案したタスクのidの配列を(string[])返してください。提案は5個以内(なるべく5個)にし、とくに関連が深いタスクを選んでください。
+            現在のタスクの情報を与えるので、次に実行するタスクを提案してください。提案したタスクのidの配列を「コードブロックやバッククォートを使わず、純粋なJSON配列のみ」で返してください。提案は5個以内(なるべく5個)にし、とくに関連が深いタスクを選んでください。
             現在のタスク:
             ${
                 `{
@@ -178,7 +178,7 @@ export async function suggestNextTasks(userId: string, currentTask: Task): Promi
             body: JSON.stringify({
                 model: `${process.env.OPENAI_API_MODEL}`,
                 messages: [
-                    { role: 'system', content: 'あなたは優秀なタスク管理アシスタントです。次に実行するべきタスクを5個以内で提案します。提案はタスクのidの配列(string[])で返してください。' },
+                    { role: 'system', content: 'あなたは優秀なタスク管理アシスタントです。次に実行するべき現在のタスクと関連が深いタスクを5個以内で提案します。提案はタスクのidの配列(string[])で返してください。' },
                     {
                         role: 'user',
                         content: prompt
@@ -193,9 +193,11 @@ export async function suggestNextTasks(userId: string, currentTask: Task): Promi
 
         const data = await response.json();
         const taskIdsString = data.choices[0].message.content.trim();
+        console.log('LLM Response:', taskIdsString);
         const taskIds = JSON.parse(taskIdsString) as string[];
         console.log('Suggested Task IDs:', taskIds);
-        return taskIds;
+        const suggestedTasks = tasks.filter(task => taskIds.includes(task.id) && task.id !== currentTask.id);
+        return suggestedTasks as unknown as Task[];
     } catch (error) {
         console.error('suggestNextTasks error:', error);
         throw error;

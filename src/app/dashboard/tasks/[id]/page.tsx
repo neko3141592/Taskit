@@ -52,7 +52,7 @@ export default function Task() {
                         <TaskPage pages={task.pages} taskId={task.id} />
                     </div>
                     <div className=" md:w-1/3 mt-4 md:mt-0">
-                        <TaskSuggest />
+                        <TaskSuggest currentTask={task} />
                     </div>
                     
                 </div>
