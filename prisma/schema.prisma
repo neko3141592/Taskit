@@ -32,6 +32,7 @@ model User {
   subjects      Subject[]
   tests         Test[]
   notifications Notification[]
+  scores        Score[]
 }
 
 model Account {
@@ -96,7 +97,9 @@ model Task {
   dueDate     DateTime?
   userId      String
   subjectId   String?
-  testId      String?    // どのテストに属するか
+  testId      String?    
+  notificationDaysBefore Int? @default(3)
+  notified   Boolean   @default(false)
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
 
@@ -126,6 +129,7 @@ model Subject {
   user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   tasks     Task[]
   tests     Test[]
+  scores    Score[]
 
   @@unique([name, userId])
   @@map("subjects")
@@ -147,6 +151,7 @@ model Test {
   user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   subjects    Subject[]
   tasks       Task[]
+  scores      Score[]
 
   @@map("tests")
 }
@@ -165,3 +170,17 @@ model Notification {
   @@map("notifications")
 }
 
+model Score {
+  id        String   @id @default(uuid())
+  value     Int
+  testId    String
+  userId    String
+  subjectId String
+  createdAt DateTime @default(now())
+
+  test      Test     @relation(fields: [testId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subject   Subject  @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+
+  @@map("scores")
+}

@@ -9,7 +9,7 @@ import { toast } from 'sonner';
 import Spinner from '../ui/spinner';
 import { useRouter } from "next/navigation";
 
-const LIMIT = 2;
+const LIMIT = 5;
 
 export default function NotificationsDialog() {
     const [notifications, setNotifications] = useState<Notification[]>([]);

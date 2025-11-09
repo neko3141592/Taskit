@@ -18,12 +18,27 @@ import axios from "axios";
 import RecentlyTasksList from "./recently-tasks-list";
 import { useSession } from "next-auth/react";
 
+const periodMap: { [key: string]: { from: string; to: string } } = {
+    "three-days": {
+        from: new Date().toISOString(),
+        to: new Date(new Date().getTime() + 3 * 24 * 60 * 60 * 1000).toISOString(),
+    },
+    "week": {
+        from: new Date().toISOString(),
+        to: new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+    },
+    "month": {
+        from: new Date().toISOString(),
+        to: new Date(new Date().getTime() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+    },
+};
+
 export default function RecentlyTasks() {
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [totalCount, setTotalCount] = useState<number>(0);
     const [totalPages, setTotalPages] = useState<number>(0);
     const limit: number = 5;
-    const [selectedPeriod, setSelectedPeriod] = useState<string>("week");
+    const [selectedPeriod, setSelectedPeriod] = useState<string>("three-days");
     const [tasks, setTasks] = useState<Task[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
 
@@ -46,7 +61,9 @@ export default function RecentlyTasks() {
                         sort: 'dueDate',
                         order: 'asc',
                         limit,
-                        skip: (currentPage - 1) * limit
+                        skip: (currentPage - 1) * limit,
+                        dueDateFrom: periodMap[selectedPeriod].from,
+                        dueDateTo: periodMap[selectedPeriod].to
                     }
                 });
                 const data: Task[] = res.data.data.tasks;
@@ -83,9 +100,9 @@ export default function RecentlyTasks() {
                         <SelectContent>
                             <SelectGroup>
                                 <SelectLabel>直近</SelectLabel>
+                                <SelectItem value="three-days">3日</SelectItem>
                                 <SelectItem value="week">1週間</SelectItem>
                                 <SelectItem value="month">1ヶ月</SelectItem>
-                                <SelectItem value="three-months">3ヶ月</SelectItem>
                             </SelectGroup>
                         </SelectContent>
                     </Select>

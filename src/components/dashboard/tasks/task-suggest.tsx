@@ -68,7 +68,7 @@ export default function TaskSuggest({ currentTask }: TaskSuggestProps) {
                         {suggestions.map((task, i) => (
                             <div
                                 key={task.id}
-                                className="flex items-center gap-3 p-3 rounded-lg bg-white shadow hover:shadow-md transition cursor-pointer border border-gray-100"
+                                className="flex items-center gap-3 p-3 rounded-lg bg-white border hover:shadow-xs transition cursor-pointer border border-gray-200"
                                 style={{
                                     animation: `fadeUp 0.5s ease ${i * 0.15}s both`
                                 }}
@@ -86,7 +86,7 @@ export default function TaskSuggest({ currentTask }: TaskSuggestProps) {
                                     <div className="text-base font-semibold text-gray-800 truncate">{task.title}</div>
                                     <div className="text-xs text-gray-500 truncate">{task.description}</div>
                                 </div>
-                                <ArrowRight className="w-5 h-5 text-indigo-500" />
+                                <ArrowRight className="w-5 h-5 text-teal-500" />
                             </div>
                         ))}
                     </div>

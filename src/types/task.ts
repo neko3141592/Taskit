@@ -48,6 +48,8 @@ interface Task {
     tests?: Test[];
     tags?: Tag[];
     pages?: TaskPage[];
+    notificationDaysBefore?: number;
+    notified?: boolean;
 }
 
 interface TaskPage {

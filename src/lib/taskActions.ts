@@ -21,6 +21,8 @@ export async function getTasks(options: {
     order?: string;
     limit?: number;
     skip?: number;
+    dueDateFrom?: string;
+    dueDateTo?: string;
 }) {
     try {
         const {
@@ -30,7 +32,9 @@ export async function getTasks(options: {
             sort = 'dueDate',
             order = 'asc',
             limit = 20,
-            skip = 0
+            skip = 0,
+            dueDateFrom,
+            dueDateTo
         } = options;
 
         const where: Prisma.TaskWhereInput = { userId };
@@ -43,6 +47,16 @@ export async function getTasks(options: {
             }
         }
         if (subjectId) where.subjectId = subjectId;
+
+        if (dueDateFrom || dueDateTo) {
+            where.dueDate = {};
+            if (dueDateFrom) {
+                where.dueDate.gte = new Date(dueDateFrom);
+            }
+            if (dueDateTo) {
+                where.dueDate.lte = new Date(dueDateTo);
+            }
+        }
 
         const orderBy: { [key: string]: string } = {};
         orderBy[sort] = order;

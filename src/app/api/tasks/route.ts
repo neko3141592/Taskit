@@ -21,6 +21,8 @@ export async function GET(req: NextRequest) {
     const subjectId = searchParams.get('subject') ?? undefined;
     const limit = Number(searchParams.get('limit')) || 20;
     const skip = Number(searchParams.get('skip')) || 0;
+    const dueDateFrom = searchParams.get('dueDateFrom') ?? undefined;
+    const dueDateTo = searchParams.get('dueDateTo') ?? undefined;
 
     const { tasks, totalCount } = await getTasks({
         userId: uid,
@@ -29,7 +31,9 @@ export async function GET(req: NextRequest) {
         sort,
         order,
         limit,
-        skip
+        skip,
+        dueDateFrom,
+        dueDateTo
     });
 
     return NextResponse.json({ 
