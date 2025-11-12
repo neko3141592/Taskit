@@ -128,7 +128,6 @@ model Subject {
 
   user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   tasks     Task[]
-  tests     Test[]
   scores    Score[]
 
   @@unique([name, userId])
@@ -144,12 +143,12 @@ model Tag {
 model Test {
   id          String    @id @default(uuid())
   name        String
-  date        DateTime
+  startDate   DateTime
+  endDate     DateTime
   description String?
   userId      String
 
   user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  subjects    Subject[]
   tasks       Task[]
   scores      Score[]
 
@@ -173,6 +172,7 @@ model Notification {
 model Score {
   id        String   @id @default(uuid())
   value     Int
+  maxValue  Int @default(100)
   testId    String
   userId    String
   subjectId String
@@ -181,6 +181,8 @@ model Score {
   test      Test     @relation(fields: [testId], references: [id], onDelete: Cascade)
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   subject   Subject  @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+
+  @@unique([testId, userId, subjectId])
 
   @@map("scores")
 }

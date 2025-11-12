@@ -5,6 +5,7 @@ import AppSidebar from "@/components/dashboard/sidebar";
 import Header from '@/components/dashboard/header';
 import { Toaster } from "@/components/ui/sonner";
 import { SessionProvider } from "next-auth/react";
+import ChatWindow from "@/components/dashboard/chat/chat-window";
 
 export default async function DashboardLayout({
     children,
@@ -30,6 +31,7 @@ export default async function DashboardLayout({
                     </div>
                 </main>
                 <Toaster />
+                <ChatWindow />
             </SidebarProvider>
         </SessionProvider>
     );

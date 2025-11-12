@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Book } from 'lucide-react';
 import TaskCards from '@/components/ui/task-cards';
 import Spinner from "@/components/ui/spinner";
+import { SubjectChart } from "@/components/dashboard/subjects/subject-chart";
 
 type Props = {
     params: { id: string }
@@ -36,12 +37,13 @@ export default function Subject({ params }: Props) {
 
     return (
         <div className="p-4">
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-4 pb-8">
                 <div className="p-3 rounded-full" style={{ backgroundColor: `${subject?.color}20` }}>
                     <Book className="h-6 w-6" style={{ color: subject?.color || '#808080' }} />
                 </div>
                 <h1 className="text-xl font-bold">{subject?.name}</h1>
             </div>
+            <SubjectChart subjectId={subject.id} />
             <TaskCards 
                 tasks={subject?.tasks || []}
                 className="mt-6"

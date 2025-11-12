@@ -49,7 +49,7 @@ export default function Subjects() {
         if (status === "authenticated") {
             fetchSubjects();
         }
-    }, [session, status]);
+    }, [status]);
 
     if (loading) {
         return (
@@ -73,12 +73,12 @@ export default function Subjects() {
                     <SubjectAddDialog onAdd={fetchSubjects} />
                 </CardHeader>
                 <CardContent>
-                    <Input placeholder="検索" className="mb-4 max-w-[200px]" onChange={handleSearchChange} />
+                    <Input placeholder="検索" className="mb-4 max-w-[200px] rounded-sm shadow-none" onChange={handleSearchChange} />
                     {filteredSubjects && filteredSubjects.length > 0 ? (
                         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                             {filteredSubjects.map(subject => (
                                 <Link key={subject.id} href={`/dashboard/subjects/${subject.id}`} passHref>
-                                    <Card className="group hover:border-teal-500 shadow-xs transition-all  cursor-pointer h-full flex flex-col">
+                                    <Card className="group hover:border-teal-500 shadow-xs transition-all shadow-none cursor-pointer h-full flex flex-col">
                                         <CardHeader className="flex-grow">
                                             <div className="flex items-center gap-4">
                                                 <div className="p-3 rounded-full" style={{ backgroundColor: `${subject.color}20` }}>

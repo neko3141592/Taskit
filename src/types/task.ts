@@ -16,11 +16,14 @@ interface Tag {
 interface Test {
     id: string;
     name: string;
-    date: string;
+    startDate: string;
+    endDate: string;
     description?: string;
     userId: string;
-    subjects?: Subject[];
     tasks?: Task[];
+    scores?: Score[];
+    createdAt: string;
+    updatedAt: string;
 }
 
 interface Subject {
@@ -31,6 +34,17 @@ interface Subject {
     createdAt: string;
     tests?: Test[];
     tasks?: Task[];
+}
+
+interface Score {
+    id: string;
+    value: number;
+    maxValue: number;
+    userId: string;
+    subjectId: string;
+    subject: Subject;
+    testId: string;
+    test?: Test;
 }
 
 interface Task {

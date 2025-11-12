@@ -3,16 +3,26 @@ import { prisma } from '@/lib/prisma';
 import { auth } from '@/auth';
 
 export async function GET(req: NextRequest) {
-    const userId = req.nextUrl.searchParams.get('userId');
-    if (!userId) {
-        return NextResponse.json({
-            status: "error",
-            message: "userId is required"
-        }, { status: 400 });
+    const session = await auth();
+    if (!session || !session.user?.id) {
+        return NextResponse.json({ 
+            status: 'error',
+            message: '認証されていません'
+        }, { status: 401 });
     }
+    const uid = session.user.id;
+
+    const filter = req.nextUrl.searchParams.get('search');
+    
     try {
         const subjects = await prisma.subject.findMany({
-            where: { userId },
+            where: { 
+                userId: uid,
+                name: filter ? {
+                    contains: filter,
+                    mode: 'insensitive'
+                } : undefined
+            },
             orderBy: { name: "asc" },
             include: {
                 tasks: {

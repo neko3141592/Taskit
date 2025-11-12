@@ -54,7 +54,7 @@ export default function TaskTitle(props: TaskTitleProps) {
     };
 
     return (
-        <div className={`mb-4 border border-gray-200 rounded p-4 ${className}`}>
+        <div className={`mb-4 border-none rounded p-4 ${className}`}>
             <div className="flex justify-between items-start">
                 <div>
                     {getSubjectBadge(task.subject)}
@@ -86,7 +86,6 @@ export default function TaskTitle(props: TaskTitleProps) {
             </div>
             <h1 className="text-2xl font-bold pt-6 pb-2">{task.title}</h1>
             <p className=" text-gray-600 mt-1">{task.description}</p>
-            {/* 編集ダイアログ */}
             <Dialog open={editOpen} onOpenChange={setEditOpen}>
                 <DialogContent>
                     <DialogHeader>
@@ -95,7 +94,6 @@ export default function TaskTitle(props: TaskTitleProps) {
                     <UpdateTaskDialog task={task} />
                 </DialogContent>
             </Dialog>
-            {/* 削除確認ダイアログ */}
             <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
                 <DialogContent>
                     <DialogHeader>

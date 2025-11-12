@@ -23,6 +23,7 @@ export async function getTasks(options: {
     skip?: number;
     dueDateFrom?: string;
     dueDateTo?: string;
+    title?: string; // 追加
 }) {
     try {
         const {
@@ -34,7 +35,8 @@ export async function getTasks(options: {
             limit = 20,
             skip = 0,
             dueDateFrom,
-            dueDateTo
+            dueDateTo,
+            title // 追加
         } = options;
 
         const where: Prisma.TaskWhereInput = { userId };
@@ -56,6 +58,11 @@ export async function getTasks(options: {
             if (dueDateTo) {
                 where.dueDate.lte = new Date(dueDateTo);
             }
+        }
+
+        // タイトルによる部分一致検索を追加
+        if (title) {
+            where.title = { contains: title, mode: 'insensitive' };
         }
 
         const orderBy: { [key: string]: string } = {};
