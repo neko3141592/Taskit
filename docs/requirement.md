@@ -23,9 +23,9 @@ Next.js + Firebase + Prisma/PostgreSQLを基盤とし、直感的なUIと強力�
 - [ ] バックエンド認証ミドルウェア
 
 ### テスト管理
-- [ ] テスト情報登録（科目名、日付、難易度等）
+- [ ] テスト情報登録（教科名、日付、難易度等）
 - [ ] テストCRUD
-- [ ] テスト一覧表示（日付順・科目別）
+- [ ] テスト一覧表示（日付順・教科別）
 - [ ] テスト詳細ページ
 - [ ] テスト結果記録・成績推移グラフ
 
@@ -42,7 +42,7 @@ Next.js + Firebase + Prisma/PostgreSQLを基盤とし、直感的なUIと強力�
 - [ ] 計画調整機能
 
 ### 統計・分析
-- [ ] 科目別学習時間統計
+- [ ] 教科別学習時間統計
 - [ ] テスト結果分析ダッシュボード
 - [ ] 弱点分野特定・表示
 - [ ] 学習効率分析
@@ -85,7 +85,7 @@ Next.js + Firebase + Prisma/PostgreSQLを基盤とし、直感的なUIと強力�
   "message": "無効なリクエストデータ",
   "details": {
     "field": "subject",
-    "error": "科目名は必須です"
+    "error": "教科名は必須です"
   }
 }
 ```
@@ -135,7 +135,7 @@ package.json
 - `/register` 新規登録
 - `/dashboard` ダッシュボード
 - `/dashboard/tasks` タスク管理
-- `/dashboard/subjects` 科目管理
+- `/dashboard/subjects` 教科管理
 - `/dashboard/profile` プロフィール
 - `/dashboard/tests` テスト管理
 - `/dashboard/statistics` 統計・分析

@@ -32,7 +32,7 @@ export default function TestTitle({ test, className }: TestTitleProps) {
                     </DropdownMenuContent>
                 </DropdownMenu>
             </div>
-            <div className="flex">
+            <div className="flex flex-wrap">
                 {test.scores?.map((score) => (
                     <SubjectBadge key={score.id} subject={score.subject} />
                 ))}

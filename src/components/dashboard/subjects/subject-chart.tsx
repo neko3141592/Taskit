@@ -28,6 +28,7 @@ ChartJS.register(
 export const options = {
   responsive: true,
   maintainAspectRatio: false,
+  spanGaps: true,
   plugins: {
     legend: {
       display: false,
@@ -145,7 +146,7 @@ export function SubjectChart({ subjectId }: { subjectId: string }) {
         </div>
       </div>
 
-      {/* 凡例（科目名） */}
+      {/* 凡例（教科名） */}
       {chartData.datasets.length > 0 && (
         <div className="px-6 pb-4 border-t border-gray-900/5 pt-4">
           <div className="flex flex-wrap gap-3">

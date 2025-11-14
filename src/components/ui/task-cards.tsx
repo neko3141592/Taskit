@@ -37,7 +37,7 @@ export default function TaskCards(props: taskCardsProps) {
     return (
         <div className={`grid grid-cols-1 md:grid-cols-4 gap-4 ${className}`}>
             {tasks.map((task) => (
-                <Card key={task.id} onClick={() => onTaskClick?.(task)} className="shadow-xs hover:border-teal-500 cursor-pointer transition-all">
+                <Card key={task.id} onClick={() => onTaskClick?.(task)} className="shadow-xs hover:border-teal-500 dark:hover:border-teal-400 cursor-pointer transition-all">
                     <CardHeader>
                         <div className="flex justify-between items-center">
                             <CardTitle>{task.title}</CardTitle>
@@ -48,15 +48,15 @@ export default function TaskCards(props: taskCardsProps) {
                         {displayTags && (
                             <div className="flex space-x-2 pt-2 overflow-x-auto">
                                 {task.tags?.map((tag) => (
-                                    <Badge key={tag.name} className="mr-2 bg-teal-500 h-6">#{tag.name}</Badge>
+                                    <Badge key={tag.name} className="mr-2 bg-teal-500 dark:bg-teal-600 h-6">#{tag.name}</Badge>
                                 ))}
                             </div>
                         )}
                     </CardHeader>
                     {displayDueDate && (
                         <CardContent className="flex items-center">
-                            <Calendar className="inline-block mr-2 h-4 w-4 text-gray-400" />
-                            <p className="text-gray-600 text-sm">{formatDate(task.dueDate)}</p>
+                            <Calendar className="inline-block mr-2 h-4 w-4 text-gray-400 dark:text-gray-500" />
+                            <p className="text-gray-600 dark:text-gray-300 text-sm">{formatDate(task.dueDate)}</p>
                         </CardContent>
                     )}
                 </Card>

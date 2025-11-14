@@ -24,7 +24,7 @@ export default async function DashboardLayout({
                 <AppSidebar />
                 <main className="w-full">
                     <div className="px-4 py-4">
-                        <div className="sticky top-4 z-30 bg-white">
+                        <div className="sticky top-4 z-30 bg-white dark:bg-background">
                             <Header />
                         </div>
                         {children}

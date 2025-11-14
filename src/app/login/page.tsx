@@ -25,18 +25,18 @@ export default function Login() {
 
     return (
         <div
-            className="min-h-screen flex items-center justify-center p-4 bg-white"
+            className="min-h-screen flex items-center justify-center p-4 bg-white dark:bg-gray-900"
         >
             <div className="w-full max-w-md ">
-                <div className="bg-white rounded-sm shadow-none border border-gray-300">
-                    <div className="px-8 py-8 border-b border-gray-200">
-                        <h1 className="text-xl font-bold tracking-tight flex items-center gap-2 text-black">
+                <div className="bg-white dark:bg-gray-800 rounded-sm shadow-none border border-gray-300 dark:border-gray-700">
+                    <div className="px-8 py-8 border-b border-gray-200 dark:border-gray-700">
+                        <h1 className="text-xl font-bold tracking-tight flex items-center gap-2 text-black dark:text-white">
                             ログインまたはサインアップ
                         </h1>
                     </div>
                     <div className="px-8 py-8">
                         {error && (
-                            <div className="mb-4 p-3 bg-gray-100 border border-gray-300 rounded text-red-600 text-sm">
+                            <div className="mb-4 p-3 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded text-red-600 dark:text-red-400 text-sm">
                                 {error}
                             </div>
                         )}
@@ -45,7 +45,7 @@ export default function Login() {
                             onClick={handleGoogleAuth}
                             disabled={loading}
                             type="button"
-                            className="w-full flex items-center justify-center gap-3 bg-white border border-black text-black py-3 rounded-sm font-semibold  transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="w-full flex items-center justify-center gap-3 bg-white dark:bg-gray-900 border border-black dark:border-white text-black dark:text-white py-3 rounded-sm font-semibold  transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             <svg className="w-6 h-6" viewBox="0 0 24 24">
                                 <path
@@ -67,7 +67,7 @@ export default function Login() {
                             </svg>
                             Googleで続ける
                         </button>
-                        <div className="mt-8 text-center text-xs text-gray-400">
+                        <div className="mt-8 text-center text-xs text-gray-400 dark:text-gray-500">
                             <span>© 2025 Taskit</span>
                         </div>
                     </div>

@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/popover";
 import CreateTaskModal from "./create-task-modal";
 import { Input } from "../ui/input";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export default function Header() {
     const handleLogout = async () => {
@@ -26,12 +27,13 @@ export default function Header() {
     };
 
     return (
-        <header className="relative border border-gray-200 h-[60px] rounded mb-4 bg-white flex items-center justify-between px-6">
+        <header className="relative border border-gray-200 dark:border-gray-700 h-[60px] rounded mb-4 bg-white dark:border-none dark:bg-neutral-900 flex items-center justify-between px-6">
             <div className="flex items-center gap-3">
                 <SidebarTrigger />
-                <span className="font-bold text-lg text-gray-700 ">Taskit</span>
+                <span className="font-bold text-lg text-gray-700 dark:text-gray-200 ">Taskit</span>
             </div>
             <div className="flex items-center gap-2 relative">
+                <ThemeToggle />
                 <NotificationsDialog />
                 <Dialog>
                     <DialogTrigger asChild>

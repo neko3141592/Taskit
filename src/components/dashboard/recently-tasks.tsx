@@ -38,7 +38,7 @@ export default function RecentlyTasks() {
     const [totalCount, setTotalCount] = useState<number>(0);
     const [totalPages, setTotalPages] = useState<number>(0);
     const limit: number = 5;
-    const [selectedPeriod, setSelectedPeriod] = useState<string>("three-days");
+    const [selectedPeriod, setSelectedPeriod] = useState<string>("week");
     const [tasks, setTasks] = useState<Task[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
 

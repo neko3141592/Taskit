@@ -42,8 +42,8 @@ export default function RecentlyTasksList(props: RecentlyTasksListProps) {
                 {isLoading ? (
                     <Spinner/>
                 ) : tasks.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center h-full text-gray-400">
-                        <p className="text-center text-gray-500">最近のタスクはありません</p>
+                    <div className="flex flex-col items-center justify-center h-full text-gray-400 dark:text-neutral-500">
+                        <p className="text-center text-gray-500 dark:text-neutral-400">最近のタスクはありません</p>
                     </div>
                 ) : (
                     tasks.map(task => (
@@ -52,7 +52,7 @@ export default function RecentlyTasksList(props: RecentlyTasksListProps) {
                             href={`/dashboard/tasks/${task.id}`}
                             className="block"
                         >
-                            <div className="flex items-center p-2 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer">
+                            <div className="flex items-center p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors cursor-pointer">
                                 <div className="mr-3">
                                     <div 
                                         className="h-3 w-3 rounded-full" 
@@ -60,15 +60,15 @@ export default function RecentlyTasksList(props: RecentlyTasksListProps) {
                                     />
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                    <h4 className="font-medium text-sm text-gray-900 truncate">{task.title}</h4>
+                                    <h4 className="font-medium text-sm text-gray-900 dark:text-white truncate">{task.title}</h4>
                                     {task.description && (
-                                        <p className="text-xs text-gray-500 truncate">{task.description}</p>
+                                        <p className="text-xs text-gray-500 dark:text-neutral-400 truncate">{task.description}</p>
                                     )}
                                 </div>
                                 <div className="flex items-center gap-2 flex-shrink-0">
                                     {getStatusBadge(task.status)}
                                     {task.dueDate && (
-                                        <div className="flex items-center text-xs text-gray-500">
+                                        <div className="flex items-center text-xs text-gray-500 dark:text-neutral-400">
                                             <CalendarIcon className="mr-1 h-3 w-3" />
                                             {formatDate(task.dueDate)}
                                         </div>

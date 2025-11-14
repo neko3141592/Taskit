@@ -41,7 +41,7 @@ export default function Subject({ params }: Props) {
                 <div className="p-3 rounded-full" style={{ backgroundColor: `${subject?.color}20` }}>
                     <Book className="h-6 w-6" style={{ color: subject?.color || '#808080' }} />
                 </div>
-                <h1 className="text-xl font-bold">{subject?.name}</h1>
+                <h1 className="text-xl font-bold text-gray-900 dark:text-white">{subject?.name}</h1>
             </div>
             <SubjectChart subjectId={subject.id} />
             <TaskCards 

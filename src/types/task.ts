@@ -38,13 +38,14 @@ interface Subject {
 
 interface Score {
     id: string;
-    value: number;
+    value: number | null;
     maxValue: number;
     userId: string;
     subjectId: string;
-    subject: Subject;
+    subject?: Subject;
     testId: string;
     test?: Test;
+    createdAt?: string;
 }
 
 interface Task {
@@ -59,7 +60,7 @@ interface Task {
     createdAt: string;
     updatedAt: string;
     subject?: Subject;
-    tests?: Test[];
+    tests?: Test;
     tags?: Tag[];
     pages?: TaskPage[];
     notificationDaysBefore?: number;

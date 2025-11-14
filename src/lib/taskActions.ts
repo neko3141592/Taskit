@@ -3,43 +3,47 @@ import { Prisma } from '@/generated/prisma/client';
 
 export async function getTaskById(id: string) {
     try {
+        if (!id) throw new Error('Task id is required');
         return await prisma.task.findUnique({
             where: { id },
             include: { tags: true, subject: true }
         });
     } catch (error) {
         console.error('getTaskById error:', error);
-        throw error;
+        throw new Error(`Failed to get task by id: ${error instanceof Error ? error.message : String(error)}`);
     }
 }
 
 export async function getTasks(options: {
-    userId: string;
+    userId?: string;
     statusParam?: string;
     subjectId?: string;
+    testId?: string;
     sort?: string;
     order?: string;
     limit?: number;
     skip?: number;
     dueDateFrom?: string;
     dueDateTo?: string;
-    title?: string; // 追加
+    title?: string; 
 }) {
     try {
         const {
             userId,
             statusParam,
             subjectId,
+            testId,
             sort = 'dueDate',
             order = 'asc',
             limit = 20,
             skip = 0,
             dueDateFrom,
             dueDateTo,
-            title // 追加
+            title
         } = options;
 
-        const where: Prisma.TaskWhereInput = { userId };
+        const where: Prisma.TaskWhereInput = {};
+        if (userId) where.userId = userId;
         if (statusParam) {
             const statusArray = statusParam.split('+').map(s => s.trim());
             if (statusArray.length === 1) {
@@ -49,6 +53,7 @@ export async function getTasks(options: {
             }
         }
         if (subjectId) where.subjectId = subjectId;
+        if (testId) where.testId = testId;
 
         if (dueDateFrom || dueDateTo) {
             where.dueDate = {};
@@ -60,7 +65,6 @@ export async function getTasks(options: {
             }
         }
 
-        // タイトルによる部分一致検索を追加
         if (title) {
             where.title = { contains: title, mode: 'insensitive' };
         }
@@ -81,12 +85,13 @@ export async function getTasks(options: {
         return { tasks, totalCount };
     } catch (error) {
         console.error('getTasks error:', error);
-        throw error;
+        throw new Error(`Failed to get tasks: ${error instanceof Error ? error.message : String(error)}`);
     }
 }
 
 export async function updateTaskById(id: string, body: Task & { tags?: string[] }) {
     try {
+        if (!id) throw new Error('Task id is required');
         return await prisma.task.update({
             where: { id },
             data: {
@@ -110,7 +115,7 @@ export async function updateTaskById(id: string, body: Task & { tags?: string[] 
         });
     } catch (error) {
         console.error('updateTaskById error:', error);
-        throw error;
+        throw new Error(`Failed to update task: ${error instanceof Error ? error.message : String(error)}`);
     }
 }
 
@@ -124,6 +129,9 @@ export async function createTask(data: {
     tags?: string[];
 }){
     try {
+        if (!data.title) throw new Error('Task title is required');
+        if (!data.dueDate) throw new Error('Task dueDate is required');
+        if (!data.userId) throw new Error('Task userId is required');
         return await prisma.task.create({
             data: {
                 title: data.title,
@@ -141,31 +149,34 @@ export async function createTask(data: {
                     }
                     : undefined
             },
-            include: { tags: true, subject: true, tests: true }
+            include: { tags: true, subject: true, test: true }
         });
     } catch (error) {
         console.error('createTask error:', error);
-        throw error;
+        throw new Error(`Failed to create task: ${error instanceof Error ? error.message : String(error)}`);
     }
 }
 
 export async function deleteTaskById(id: string): Promise<void> {
     try {
+        if (!id) throw new Error('Task id is required');
         await prisma.task.delete({
             where: { id }
         });
     } catch (error) {
         console.error('deleteTaskById error:', error);
-        throw error;
+        throw new Error(`Failed to delete task: ${error instanceof Error ? error.message : String(error)}`);
     }
 }
 
 export async function suggestNextTasks(userId: string, currentTask: Task): Promise<Task[]> {
     try {
+        if (!userId) throw new Error('userId is required');
+        if (!currentTask || !currentTask.id) throw new Error('currentTask is required');
         const { tasks } = await getTasks({ userId, statusParam: 'NOT_STARTED+IN_PROGRESS', sort: 'dueDate', order: 'asc', limit: 10 });
         const prompt = `
-            現在のタスクの情報を与えるので、次に実行するタスクを提案してください。提案したタスクのidの配列を「コードブロックやバッククォートを使わず、純粋なJSON配列のみ」で返してください。提案は5個以内(なるべく5個)にし、とくに関連が深いタスクを選んでください。
-            現在のタスク:
+            Given the current task information, suggest the next tasks to do. Return an array of task ids (as pure JSON array, no code block or backticks). Suggest up to 5 tasks, focusing on those most related.
+            Current task:
             ${
                 `{
                     id:${currentTask.id},
@@ -175,7 +186,7 @@ export async function suggestNextTasks(userId: string, currentTask: Task): Promi
                     subject: ${currentTask.subject?.name}
                 }`
             }
-            あなたが選ぶべきタスク一覧:[
+            Available tasks:[
                 ${
                     tasks.map((task) => (
                         `{
@@ -199,7 +210,7 @@ export async function suggestNextTasks(userId: string, currentTask: Task): Promi
             body: JSON.stringify({
                 model: `${process.env.OPENAI_API_MODEL}`,
                 messages: [
-                    { role: 'system', content: 'あなたは優秀なタスク管理アシスタントです。次に実行するべき現在のタスクと関連が深いタスクを5個以内で提案します。提案はタスクのidの配列(string[])で返してください。' },
+                    { role: 'system', content: 'You are a helpful task management assistant. Suggest up to 5 tasks most related to the current task. Return an array of task ids (string[]) only.' },
                     {
                         role: 'user',
                         content: prompt
@@ -215,12 +226,17 @@ export async function suggestNextTasks(userId: string, currentTask: Task): Promi
         const data = await response.json();
         const taskIdsString = data.choices[0].message.content.trim();
         console.log('LLM Response:', taskIdsString);
-        const taskIds = JSON.parse(taskIdsString) as string[];
+        let taskIds: string[];
+        try {
+            taskIds = JSON.parse(taskIdsString) as string[];
+        } catch (parseError) {
+            throw new Error(`Failed to parse LLM response: ${taskIdsString}`);
+        }
         console.log('Suggested Task IDs:', taskIds);
         const suggestedTasks = tasks.filter(task => taskIds.includes(task.id) && task.id !== currentTask.id);
         return suggestedTasks as unknown as Task[];
     } catch (error) {
         console.error('suggestNextTasks error:', error);
-        throw error;
+        throw new Error(`Failed to suggest next tasks: ${error instanceof Error ? error.message : String(error)}`);
     }
 }

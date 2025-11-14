@@ -67,7 +67,6 @@ export default function Tests () {
                     <TestAddDialog onAdd={fetchTests} />
                 </CardHeader>
                 <CardContent>
-                    
                     <Input placeholder="検索" className="mb-4 shadow-none rounded-sm max-w-[200px]" onChange={handleSearchChange} />
                     {filteredTests && filteredTests.length > 0 ? (
                         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">

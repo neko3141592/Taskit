@@ -19,6 +19,7 @@ export async function GET(req: NextRequest) {
     const order = searchParams.get('order') ?? 'asc';
     const statusParam = searchParams.get('status') ?? undefined;
     const subjectId = searchParams.get('subject') ?? undefined;
+    const testId = searchParams.get('test') ?? undefined;
     const limit = Number(searchParams.get('limit')) || 20;
     const skip = Number(searchParams.get('skip')) || 0;
     const dueDateFrom = searchParams.get('dueDateFrom') ?? undefined;
@@ -28,6 +29,7 @@ export async function GET(req: NextRequest) {
         userId: uid,
         statusParam,
         subjectId,
+        testId,
         sort,
         order,
         limit,
