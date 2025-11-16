@@ -15,7 +15,7 @@ export default async function NextTest() {
     }
 
     return (
-           <Card className="w-full border border-gray-200 dark:border-neutral-700 shadow-none md:w-1/3">
+           <Card className="w-full   shadow-none md:w-1/3">
             <CardHeader>
                 <CardTitle>次のテスト</CardTitle>
             </CardHeader>

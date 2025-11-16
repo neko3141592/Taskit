@@ -20,22 +20,28 @@ export async function GET(req: NextRequest) {
     const statusParam = searchParams.get('status') ?? undefined;
     const subjectId = searchParams.get('subject') ?? undefined;
     const testId = searchParams.get('test') ?? undefined;
+    const excludeTestId = searchParams.get('excludeTestId') ?? undefined;
+    const tagId = searchParams.get('tag') ?? undefined;
     const limit = Number(searchParams.get('limit')) || 20;
     const skip = Number(searchParams.get('skip')) || 0;
     const dueDateFrom = searchParams.get('dueDateFrom') ?? undefined;
     const dueDateTo = searchParams.get('dueDateTo') ?? undefined;
+    const search = searchParams.get('search') ?? undefined;
 
     const { tasks, totalCount } = await getTasks({
         userId: uid,
         statusParam,
         subjectId,
         testId,
+        excludeTestId,
+        tagId,
         sort,
         order,
         limit,
         skip,
         dueDateFrom,
-        dueDateTo
+        dueDateTo,
+        title: search
     });
 
     return NextResponse.json({ 

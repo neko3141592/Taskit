@@ -19,6 +19,8 @@ export async function getTasks(options: {
     statusParam?: string;
     subjectId?: string;
     testId?: string;
+    excludeTestId?: string;
+    tagId?: string;
     sort?: string;
     order?: string;
     limit?: number;
@@ -33,6 +35,8 @@ export async function getTasks(options: {
             statusParam,
             subjectId,
             testId,
+            excludeTestId,
+            tagId,
             sort = 'dueDate',
             order = 'asc',
             limit = 20,
@@ -54,6 +58,19 @@ export async function getTasks(options: {
         }
         if (subjectId) where.subjectId = subjectId;
         if (testId) where.testId = testId;
+        if (excludeTestId) {
+            where.OR = [
+                { testId: null },
+                { testId: { not: excludeTestId } }
+            ];
+        }
+        if (tagId) {
+            where.tags = {
+                some: {
+                    id: tagId
+                }
+            };
+        }
 
         if (dueDateFrom || dueDateTo) {
             where.dueDate = {};
@@ -100,6 +117,7 @@ export async function updateTaskById(id: string, body: Task & { tags?: string[] 
                 status: body.status,
                 dueDate: body.dueDate,
                 subjectId: body.subjectId,
+                testId: body.testId,
                 tags: body.tags
                     ? {
                         set: [],

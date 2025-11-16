@@ -1,17 +1,18 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { JetBrains_Mono, Noto_Sans_JP } from "next/font/google";
 import "./globals.css";
 import Footer from "@/components/home/footer";
 import { ThemeProvider } from "@/components/theme-provider";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const jetbrainsMono = JetBrains_Mono({
+  variable: "--font-jetbrains-mono",
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const notoSansJP = Noto_Sans_JP({
+  variable: "--font-noto-sans-jp",
   subsets: ["latin"],
+  weight: ["400", "500", "700"],
 });
 
 export const metadata: Metadata = {
@@ -27,7 +28,7 @@ export default function RootLayout({
   return (
     <html lang="ja" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${jetbrainsMono.variable} ${notoSansJP.variable} font-sans antialiased`}
       >
         <ThemeProvider
           attribute="class"

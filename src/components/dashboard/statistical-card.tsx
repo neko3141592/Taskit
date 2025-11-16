@@ -34,7 +34,7 @@ export default async function StatisticalCard() {
                     <ListTodo className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                    <div className="text-2xl font-bold">{stats.totalTasks}</div>
+                    <div className="text-2xl font-bold font-mono">{stats.totalTasks}</div>
                     <p className="text-xs text-muted-foreground mt-1">登録済みのタスク</p>
                 </CardContent>
             </Card>
@@ -45,7 +45,7 @@ export default async function StatisticalCard() {
                     <CheckCircle className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                    <div className="text-2xl font-bold">{stats.completedTasks}</div>
+                    <div className="text-2xl font-bold font-mono">{stats.completedTasks}</div>
                     <p className="text-xs text-muted-foreground mt-1">完了したタスク</p>
                 </CardContent>
             </Card>
@@ -55,7 +55,7 @@ export default async function StatisticalCard() {
                     <CardTitle className="text-sm font-medium">未着手</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <div className="text-2xl font-bold">{stats.notStartedTasks}</div>
+                    <div className="text-2xl font-bold font-mono">{stats.notStartedTasks}</div>
                     <p className="text-xs text-muted-foreground mt-1">未着手のタスク</p>
                 </CardContent>
             </Card>
@@ -65,7 +65,7 @@ export default async function StatisticalCard() {
                     <CardTitle className="text-sm font-medium">進行中</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <div className="text-2xl font-bold">{stats.inProgressTasks}</div>
+                    <div className="text-2xl font-bold font-mono">{stats.inProgressTasks}</div>
                     <p className="text-xs text-muted-foreground mt-1">進行中のタスク</p>
                 </CardContent>
             </Card>
@@ -75,7 +75,7 @@ export default async function StatisticalCard() {
                     <CardTitle className="text-sm font-medium">完了率</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <div className="text-2xl font-bold">{stats.completionRate}%</div>
+                    <div className="text-2xl font-bold font-mono">{stats.completionRate}%</div>
                     <Progress value={stats.completionRate} className="mt-2" />
                 </CardContent>
             </Card>

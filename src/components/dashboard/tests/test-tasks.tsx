@@ -2,62 +2,149 @@
 
 import { useEffect, useState } from "react";
 import { Progress } from "@/components/ui/progress";
-import { CheckCircle2, Circle, Book, ArrowRight, Plus } from "lucide-react";
+import { CheckCircle2, Circle, Book, Plus, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { toast } from "sonner";
 import axios from "axios";
+import { useSession } from "next-auth/react";
 
 type TestTasksProps = {
     className?: string;
     test: Test;
+    tasks: Task[];
+    onTasksChange: () => void;
 };
 
-export default function TestTasks({ className, test }: TestTasksProps) {
-    const [tasks, setTasks] = useState<Task[]>([]);
-    const [loading, setLoading] = useState(true);
+export default function TestTasks({ className, test, tasks, onTasksChange }: TestTasksProps) {
+    const { data: session } = useSession();
+    const userId = session?.user?.id;
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [availableTasks, setAvailableTasks] = useState<Task[]>([]);
+    const [totalAvailable, setTotalAvailable] = useState(0);
+    const [searchQuery, setSearchQuery] = useState("");
+    const [isLoadingAvailable, setIsLoadingAvailable] = useState(false);
+    const [currentPage, setCurrentPage] = useState(1);
+    const ITEMS_PER_PAGE = 20;
+
+    const fetchAvailableTasks = async (page = 1, search = "") => {
+        if (!userId) return;
+        setIsLoadingAvailable(true);
+        try {
+            const params: Record<string, string | number> = {
+                userId,
+                excludeTestId: test.id,
+                limit: ITEMS_PER_PAGE,
+                skip: (page - 1) * ITEMS_PER_PAGE,
+            };
+            
+            if (search) {
+                params.search = search;
+            }
+
+            const res = await axios.get<APIResponse<{tasks: Task[], totalCount: number}>>(`/api/tasks/`, {
+                params
+            });
+            setAvailableTasks(res.data.data.tasks);
+            setTotalAvailable(res.data.data.totalCount);
+        } catch (error) {
+            console.error('Error fetching available tasks:', error);
+            setAvailableTasks([]);
+            setTotalAvailable(0);
+        } finally {
+            setIsLoadingAvailable(false);
+        }
+    };
 
     useEffect(() => {
-        async function fetchTasks() {
-            if (!test.id) return;
-            setLoading(true);
-            try {
-                const res = await axios.get<APIResponse<{tasks: Task[], totalCount: number}>>(`/api/tasks/`, {
-                    params: { test: test.id },
-                });
-                setTasks(res.data.data.tasks); 
-            } catch (error) {
-                console.error('Error fetching tasks:', error);
-                setTasks([]);
-            } finally {
-                setLoading(false);
-            }
+        if (isModalOpen) {
+            const timer = setTimeout(() => {
+                fetchAvailableTasks(currentPage, searchQuery);
+            }, 300);
+            return () => clearTimeout(timer);
         }
-        fetchTasks();
-    }, [test.id]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [searchQuery, currentPage, isModalOpen]);
+
+    const handleAddTask = async (taskId: string) => {
+        try {
+            await axios.patch(`/api/tasks/${taskId}`, {
+                testId: test.id
+            });
+            toast.success("タスクを追加しました");
+            onTasksChange();
+            fetchAvailableTasks(currentPage, searchQuery);
+        } catch (error) {
+            console.error('Error adding task:', error);
+            toast.error("タスクの追加に失敗しました");
+        }
+    };
+
+    const handleRemoveTask = async (taskId: string) => {
+        try {
+            await axios.patch(`/api/tasks/${taskId}`, {
+                testId: null
+            });
+            toast.success("タスクを削除しました");
+            onTasksChange();
+        } catch (error) {
+            console.error('Error removing task:', error);
+            toast.error("タスクの削除に失敗しました");
+        }
+    };
+
+    const openModal = () => {
+        setIsModalOpen(true);
+        setCurrentPage(1);
+        setSearchQuery("");
+    };
+
+    const filteredTasks = availableTasks;
 
     const completedCount = tasks.filter(task => task.status === 'COMPLETED').length;
     const totalCount = tasks.length;
     const completionRate = totalCount > 0 ? (completedCount / totalCount) * 100 : 0;
 
     return (
+        <>
         <div className={`bg-white dark:bg-neutral-900 border border-gray-900/10 dark:border-neutral-700 rounded-sm w-full ${className}`}>
             <div className="px-6 py-6 border-b border-gray-900/5 dark:border-neutral-800">
+                <div className="flex items-center justify-between mb-6">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">関連タスク</h3>
+                    <Button
+                        onClick={openModal}
+                        size="sm"
+                        variant="outline"
+                        className="gap-2"
+                    >
+                        <Plus className="h-4 w-4" />
+                        タスクを追加
+                    </Button>
+                </div>
                 <div className="flex items-center justify-center gap-12 mb-6">
                     <div className="text-center">
                         <p className="text-xs text-gray-500 dark:text-neutral-400 font-medium mb-1.5">完了タスク</p>
                         <div className="flex items-baseline justify-center gap-2">
-                            <p className="text-3xl font-bold text-gray-900 dark:text-white">
+                            <p className="text-3xl font-bold text-gray-900 dark:text-white font-mono">
                                 {completedCount}
                             </p>
-                            <span className="text-lg font-normal text-gray-400 dark:text-neutral-500">/ {totalCount}</span>
+                            <span className="text-lg font-normal text-gray-400 dark:text-neutral-500 font-mono">/ {totalCount}</span>
                         </div>
                     </div>
                     <div className="w-px h-16 bg-gray-900/10 dark:bg-neutral-700" />
                     <div className="text-center">
                         <p className="text-xs text-gray-500 dark:text-neutral-400 font-medium mb-1.5">進捗率</p>
                         <div className="flex items-baseline justify-center gap-1">
-                            <p className="text-3xl font-bold text-gray-900 dark:text-white">
+                            <p className="text-3xl font-bold text-gray-900 dark:text-white font-mono">
                                 {Math.round(completionRate)}
                             </p>
-                            <span className="text-lg font-normal text-gray-400 dark:text-neutral-500">%</span>
+                            <span className="text-lg font-normal text-gray-400 dark:text-neutral-500 font-mono">%</span>
                         </div>
                     </div>
                 </div>
@@ -68,17 +155,13 @@ export default function TestTasks({ className, test }: TestTasksProps) {
                     </p>
                 </div>
             </div>
-            {loading ? (
-                <div className="flex flex-col items-center justify-center h-[120px] bg-white dark:bg-neutral-900">
-                    <p className="text-sm text-gray-500 dark:text-neutral-400">読み込み中...</p>
-                </div>
-            ) : tasks.length > 0 ? (
+            {tasks.length > 0 ? (
                 <div className="px-4 py-2">
                     <div className="space-y-3">
                         {tasks.map((task) => (
                             <div
                                 key={task.id}
-                                className="flex items-center gap-3 p-3 rounded-sm bg-white dark:bg-neutral-800 border hover:shadow-sm transition cursor-pointer border-gray-200 dark:border-neutral-700"
+                                className="flex items-center gap-3 p-3 rounded-sm bg-white dark:bg-neutral-800 border hover:border-teal-500 transition cursor-pointer border-gray-200 dark:border-neutral-700"
                             >
                                 {task.status === 'COMPLETED' ? (
                                     <CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-400 flex-shrink-0" />
@@ -101,7 +184,14 @@ export default function TestTasks({ className, test }: TestTasksProps) {
                                         {task.description}
                                     </div>
                                 </div>
-                                <ArrowRight className="w-5 h-5 text-gray-400 dark:text-neutral-500" />
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => handleRemoveTask(task.id)}
+                                    className="h-8 w-8 p-0 hover:bg-red-50 dark:hover:bg-red-900/20"
+                                >
+                                    <X className="h-4 w-4 text-red-600 dark:text-red-400" />
+                                </Button>
                             </div>
                         ))}
                     </div>
@@ -112,9 +202,101 @@ export default function TestTasks({ className, test }: TestTasksProps) {
                         <Plus className="h-6 w-6 text-gray-400 dark:text-neutral-400" />
                     </div>
                     <p className="text-sm font-medium text-gray-900 dark:text-white">タスクがありません</p>
-                    <p className="text-xs text-gray-500 dark:text-neutral-400 mt-1">最初のタスクを追加して進捗を確認しましょう</p>
+                    <p className="text-xs text-gray-500 dark:test-neutral-400 mt-1">タスクを追加して進捗を確認しましょう</p>
                 </div>
             )}
         </div>
+
+        <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+            <DialogContent className="sm:max-w-[600px] border-neutral-200 dark:border-neutral-700 dark:bg-neutral-900">
+                <DialogHeader>
+                    <DialogTitle className="text-xl font-semibold text-gray-900 dark:text-white">
+                        タスクを追加
+                    </DialogTitle>
+                </DialogHeader>
+                
+                <div className="space-y-4">
+                    <Input
+                        placeholder="タスクを検索..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="dark:bg-neutral-800 dark:border-neutral-700"
+                    />
+
+                    <div className="max-h-[400px] overflow-y-auto space-y-2">
+                        {isLoadingAvailable ? (
+                            <div className="flex justify-center py-8">
+                                <p className="text-sm text-gray-500 dark:text-neutral-400">読み込み中...</p>
+                            </div>
+                        ) : filteredTasks.length > 0 ? (
+                            <>
+                                {filteredTasks.map((task) => (
+                                <div
+                                    key={task.id}
+                                    className="flex items-center gap-3 p-3 rounded-lg border border-neutral-200 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition"
+                                >
+                                    <div
+                                        className="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center"
+                                        style={{
+                                            backgroundColor: `${task.subject?.color ?? "#E5E7EB"}22`,
+                                        }}
+                                    >
+                                        <Book className="w-5 h-5" style={{ color: task.subject?.color ?? "#6366F1" }} />
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <div className="text-sm font-semibold truncate text-gray-900 dark:text-white">
+                                            {task.title}
+                                        </div>
+                                        {task.description && (
+                                            <div className="text-xs truncate text-gray-500 dark:text-neutral-400">
+                                                {task.description}
+                                            </div>
+                                        )}
+                                    </div>
+                                    <Button
+                                        size="sm"
+                                        onClick={() => handleAddTask(task.id)}
+                                        className="gap-2"
+                                    >
+                                        <Plus className="h-4 w-4" />
+                                    </Button>
+                                </div>
+                            ))}
+                            
+                            {/* ページネーション */}
+                            {totalAvailable > ITEMS_PER_PAGE && (
+                                <div className="flex justify-center gap-2 pt-4">
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                                        disabled={currentPage === 1}
+                                    >
+                                        前へ
+                                    </Button>
+                                    <span className="flex items-center text-sm text-gray-600 dark:text-neutral-400">
+                                        {currentPage} / {Math.ceil(totalAvailable / ITEMS_PER_PAGE)}
+                                    </span>
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => setCurrentPage(prev => prev + 1)}
+                                        disabled={currentPage >= Math.ceil(totalAvailable / ITEMS_PER_PAGE)}
+                                    >
+                                        次へ
+                                    </Button>
+                                </div>
+                            )}
+                            </>
+                        ) : (
+                            <div className="text-center py-8 text-gray-500 dark:text-neutral-400">
+                                {searchQuery ? "検索結果がありません" : "追加可能なタスクがありません"}
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </DialogContent>
+        </Dialog>
+        </>
     );
 }

@@ -22,6 +22,7 @@ import TestTasks from '@/components/dashboard/tests/test-tasks';
 export default function Test () {
 
     const [test, setTest] = useState<Test | null>(null);
+    const [testTasks, setTestTasks] = useState<Task[]>([]);
     const { id } = useParams();
 
     const fetchTest = async () => {
@@ -35,9 +36,24 @@ export default function Test () {
         }
     };
 
+    const fetchTestTasks = async () => {
+        if (!id) return;
+        try {
+            const res = await axios.get<APIResponse<{tasks: Task[], totalCount: number}>>(`/api/tasks/`, {
+                params: { test: id },
+            });
+            setTestTasks(res.data.data.tasks);
+        } catch (error) {
+            console.error('Error fetching tasks:', error);
+            setTestTasks([]);
+        }
+    };
+
 
     useEffect(() => {
         fetchTest();
+        fetchTestTasks();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [id]);
 
 
@@ -132,7 +148,11 @@ export default function Test () {
                         handleDelete={handleDeleteSubject}
                         className="sm:w-1/2 w-full sm:max-w-sm"
                     />
-                    <TestTasks test={test} />
+                    <TestTasks 
+                        test={test} 
+                        tasks={testTasks}
+                        onTasksChange={fetchTestTasks}
+                    />
                 </TabsContent>
                 <TabsContent value="scores">
                     <TestScores test={test} onEdit={handleEditScore} />

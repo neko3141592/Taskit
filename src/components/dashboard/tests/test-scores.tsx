@@ -44,56 +44,52 @@ export default function TestScoresList({ test, onEdit, disabled }: TestScoresLis
     return (
         <div className={`transition-opacity ${disabled ? "opacity-50 pointer-events-none select-none" : ""}`}>
             <div className="bg-white dark:bg-neutral-900 border border-gray-900/10 dark:border-neutral-700 rounded-sm">
-                {/* ヘッダー - 統計表示 */}
                 <div className="px-6 py-6 border-b border-gray-900/5 dark:border-neutral-800">
                     <div className="flex items-center justify-center gap-12">
-                        {/* 合計点 */}
                         <div className="text-center">
                             <p className="text-xs text-gray-500 dark:text-neutral-400 font-medium mb-1.5">合計点</p>
                             <div className="flex items-baseline justify-center gap-2">
-                                <p className="text-3xl font-bold text-gray-900 dark:text-white">
+                                <p className="text-3xl font-bold text-gray-900 dark:text-white font-mono">
                                     {totalScore}
                                 </p>
-                                <span className="text-lg font-normal text-gray-400 dark:text-neutral-500">/ {totalMaxValue}</span>
+                                <span className="text-lg font-normal text-gray-400 dark:text-neutral-500 font-mono">/ {totalMaxValue}</span>
                             </div>
                             <div className="flex items-center justify-center gap-1 mt-1.5">
                                 {scoreDiff >= 0 ? (
                                     <>
                                         <TrendingUp className="h-3 w-3 text-green-600 dark:text-green-400" />
-                                        <span className="text-xs font-medium text-green-600 dark:text-green-400">+{scoreDiff}</span>
+                                        <span className="text-xs font-medium text-green-600 dark:text-green-400 font-mono">+{scoreDiff}</span>
                                     </>
                                 ) : (
                                     <>
                                         <TrendingDown className="h-3 w-3 text-red-600 dark:text-red-400" />
-                                        <span className="text-xs font-medium text-red-600 dark:text-red-400">{scoreDiff}</span>
+                                        <span className="text-xs font-medium text-red-600 dark:text-red-400 font-mono">{scoreDiff}</span>
                                     </>
                                 )}
                                 <span className="text-xs text-gray-400 dark:text-neutral-500 ml-0.5">前回比</span>
                             </div>
                         </div>
 
-                        {/* 区切り線 */}
                         <div className="w-px h-16 bg-gray-900/10 dark:bg-neutral-700" />
 
-                        {/* 達成率 */}
                         <div className="text-center">
                             <p className="text-xs text-gray-500 dark:text-neutral-400 font-medium mb-1.5">達成率</p>
                             <div className="flex items-baseline justify-center gap-1">
-                                <p className="text-3xl font-bold text-gray-900 dark:text-white">
+                                <p className="text-3xl font-bold text-gray-900 dark:text-white font-mono">
                                     {Math.round(overallPercent)}
                                 </p>
-                                <span className="text-lg font-normal text-gray-400 dark:text-neutral-500">%</span>
+                                <span className="text-lg font-normal text-gray-400 dark:text-neutral-500 font-mono">%</span>
                             </div>
                             <div className="flex items-center justify-center gap-1 mt-1.5">
                                 {percentDiff >= 0 ? (
                                     <>
                                         <TrendingUp className="h-3 w-3 text-green-600 dark:text-green-400" />
-                                        <span className="text-xs font-medium text-green-600 dark:text-green-400">+{percentDiff}%</span>
+                                        <span className="text-xs font-medium text-green-600 dark:text-green-400 font-mono">+{percentDiff}%</span>
                                     </>
                                 ) : (
                                     <>
                                         <TrendingDown className="h-3 w-3 text-red-600 dark:text-red-400" />
-                                        <span className="text-xs font-medium text-red-600 dark:text-red-400">{percentDiff}%</span>
+                                        <span className="text-xs font-medium text-red-600 dark:text-red-400 font-mono">{percentDiff}%</span>
                                     </>
                                 )}
                                 <span className="text-xs text-gray-400 dark:text-neutral-500 ml-0.5">前回比</span>
@@ -132,7 +128,7 @@ export default function TestScoresList({ test, onEdit, disabled }: TestScoresLis
                                                             <p className="text-xs text-gray-500 dark:text-neutral-400 font-mono">
                                                                 {score.value ?? "--"} / {maxValue}
                                                             </p>
-                                                            <p className="text-sm font-bold text-gray-900 dark:text-white w-12 text-right">
+                                                            <p className="text-sm font-bold text-gray-900 dark:text-white w-12 text-right font-mono">
                                                                 {score.value === null ? "--" : `${Math.round(percent)}%`}
                                                             </p>
                                                             <ChevronRight className="h-4 w-4 text-gray-400 dark:text-neutral-500 group-hover:text-gray-900 dark:group-hover:text-white transition-colors" />

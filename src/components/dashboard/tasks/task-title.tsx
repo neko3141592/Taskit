@@ -10,6 +10,7 @@ import { DialogDescription } from "@radix-ui/react-dialog";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner"
+import SubjectBadge from "@/components/ui/subject-badge";
 
 type TaskTitleProps = {
     task: Task,
@@ -57,7 +58,7 @@ export default function TaskTitle(props: TaskTitleProps) {
         <div className={`mb-4 border-none rounded p-4 ${className}`}>
             <div className="flex justify-between items-start">
                 <div>
-                    {getSubjectBadge(task.subject)}
+                    <SubjectBadge subject={task.subject} />
                     {getStatusBadge(task.status)}
                     <br />
                     {task.tags?.map((tag) => (
