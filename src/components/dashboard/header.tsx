@@ -27,10 +27,10 @@ export default function Header() {
     };
 
     return (
-        <header className="relative border border-gray-200 dark:border-gray-700 h-[60px] rounded mb-4 bg-white dark:border-none dark:bg-neutral-900 flex items-center justify-between px-6">
+        <header className="relative border border-gray-200 dark:border-neutral-700 h-[60px] rounded-sm mb-4 bg-white dark:border-none dark:bg-neutral-900 flex items-center justify-between px-6">
             <div className="flex items-center gap-3">
                 <SidebarTrigger />
-                <span className="font-bold text-lg text-gray-700 dark:text-gray-200 ">Taskit</span>
+                <span className="font-bold text-lg text-gray-900 dark:text-neutral-200 ">Taskit</span>
             </div>
             <div className="flex items-center gap-2 relative">
                 <ThemeToggle />

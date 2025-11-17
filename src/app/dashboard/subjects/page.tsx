@@ -78,13 +78,13 @@ export default function Subjects() {
                         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                             {filteredSubjects.map(subject => (
                                 <Link key={subject.id} href={`/dashboard/subjects/${subject.id}`} passHref>
-                                    <Card className="group hover:border-teal-500 shadow-xs transition-all shadow-none cursor-pointer h-full flex flex-col">
+                                    <Card className="group hover:border-teal-500 shadow-xs transition-all shadow-none cursor-pointer h-full flex flex-col border border-gray-200 dark:border-neutral-700">
                                         <CardHeader className="flex-grow">
-                                            <div className="flex items-center gap-4">
-                                                <div className="p-3 rounded-full" style={{ backgroundColor: `${subject.color}20` }}>
+                                            <div className="flex items-center gap-4 min-w-0">
+                                                <div className="p-3 rounded-full flex-shrink-0" style={{ backgroundColor: `${subject.color}20` }}>
                                                     <Book className="h-6 w-6" style={{ color: subject.color || '#808080' }} />
                                                 </div>
-                                                <CardTitle className="text-lg truncate">{subject.name}</CardTitle>
+                                                <CardTitle className="text-lg truncate min-w-0">{subject.name}</CardTitle>
                                             </div>
                                         </CardHeader>
                                         <CardFooter className="flex justify-between items-center text-sm text-muted-foreground">

@@ -151,6 +151,7 @@ model Test {
   user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   tasks       Task[]
   scores      Score[]
+  studyPlan   StudyPlan?
 
   @@map("tests")
 }
@@ -185,4 +186,36 @@ model Score {
   @@unique([testId, userId, subjectId])
 
   @@map("scores")
+}
+
+model StudyPlan {
+  id              String           @id @default(uuid())
+  testId          String           @unique
+  overview        String
+  estimatedTime   String
+  difficulty      String
+  steps           StudyPlanStep[]
+  tips            Json             // Array of strings
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  test            Test             @relation(fields: [testId], references: [id], onDelete: Cascade)
+
+  @@map("study_plans")
+}
+
+model StudyPlanStep {
+  id                String      @id @default(uuid())
+  studyPlanId       String
+  step              Int
+  dueDate           DateTime?
+  title             String
+  description       String
+  estimatedMinutes  Int
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+
+  studyPlan         StudyPlan   @relation(fields: [studyPlanId], references: [id], onDelete: Cascade)
+
+  @@map("study_plan_steps")
 }

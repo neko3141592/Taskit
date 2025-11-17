@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { JetBrains_Mono, Noto_Sans_JP } from "next/font/google";
 import "./globals.css";
-import Footer from "@/components/home/footer";
 import { ThemeProvider } from "@/components/theme-provider";
+import { ConditionalFooter } from "@/components/conditional-footer";
 
 const jetbrainsMono = JetBrains_Mono({
   variable: "--font-jetbrains-mono",
@@ -37,7 +37,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           {children}
-          <Footer />
+          <ConditionalFooter />
         </ThemeProvider>
       </body>
       

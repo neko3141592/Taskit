@@ -53,8 +53,8 @@ export default function Task() {
 
     if (task) {
         return (
-            <div>
-                <Breadcrumb className="mb-4">
+            <div className="space-y-4">
+                <Breadcrumb>
                 <BreadcrumbList>
                     <BreadcrumbItem>
                     <BreadcrumbLink href="/dashboard/tasks">タスク一覧</BreadcrumbLink>
@@ -65,12 +65,17 @@ export default function Task() {
                     </BreadcrumbItem>
                 </BreadcrumbList>
                 </Breadcrumb>
+                
                 <TaskTitle task={task} />
-                <div className="md:flex">
-                    <div className="w-full md:w-2/3 md:mr-4">
+
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+
+                    <div className="lg:col-span-2">
                         <TaskPage pages={task.pages} taskId={task.id} />
                     </div>
-                    <div className=" md:w-1/3 mt-4 md:mt-0">
+
+
+                    <div className="lg:col-span-1 space-y-4">
                         <TaskSuggest currentTask={task} />
                     </div>
                     

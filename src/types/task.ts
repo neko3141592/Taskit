@@ -96,3 +96,19 @@ interface Notification {
     link?: string;
     createdAt: string;
 }
+
+
+interface StudyPlan {
+    overview: string;
+    estimatedTime: string;
+    difficulty: string;
+    testId: string;
+    steps: {
+        step: number;
+        title: string;
+        dueDate: string;
+        description: string;
+        estimatedMinutes: number;
+    }[];
+    tips: string[];
+};

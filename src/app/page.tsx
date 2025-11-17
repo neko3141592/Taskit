@@ -40,7 +40,6 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Screenshots */}
             <div className="flex justify-center items-center mt-20">
               <div className="relative w-full max-w-4xl h-[400px]">
                 <Image
@@ -125,7 +124,6 @@ export default function Home() {
           </div>
         </section>
       </main>
-
     </div>
   );
 }

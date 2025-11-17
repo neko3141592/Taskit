@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import axios from "axios";
 import  AddPageDialog  from "@/components/dashboard/tasks/task-page-add-dialog";
 import TaskPageList from "@/components/dashboard/tasks/task-page-list";
+import { BookOpen } from "lucide-react";
 
 
 type TaskPageProps = {
@@ -124,9 +125,9 @@ export default function TaskPage(props: TaskPageProps) {
     };
 
     return (
-        <Card className="w-full shadow-none min-h-[350px] h-full relative">
-            <CardHeader>
-                <CardTitle className="flex items-center gap-2">
+        <Card className="w-full shadow-none min-h-[350px] h-full relative border-teal-500/20">
+            <CardHeader className="pb-3">
+                <CardTitle className="flex items-center gap-2 text-base">
                     登録されているページ
                 </CardTitle>
             </CardHeader>

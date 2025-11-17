@@ -18,6 +18,7 @@ import TestScores from '@/components/dashboard/tests/test-scores';import {
 import  TestSubjects  from '@/components/dashboard/tests/test-subjects';
 import { toast } from 'sonner';
 import TestTasks from '@/components/dashboard/tests/test-tasks';
+import TestStudyPlan from '@/components/dashboard/tests/test-study-plan';
 
 export default function Test () {
 
@@ -142,12 +143,14 @@ export default function Test () {
                     </TabsTrigger>
                 </TabsList>
                 <TabsContent value="overview" className='sm:flex gap-4 '>
-                    <TestSubjects 
-                        subjects={test.scores?.map(score => score.subject!)} 
-                        handleAdd={handleAddSubject} 
-                        handleDelete={handleDeleteSubject}
-                        className="sm:w-1/2 w-full sm:max-w-sm"
-                    />
+                    <div className='space-y-4 sm:w-1/2 w-full sm:max-w-sm'>
+                        <TestStudyPlan test={test} />
+                        <TestSubjects 
+                            subjects={test.scores?.map(score => score.subject!)} 
+                            handleAdd={handleAddSubject} 
+                            handleDelete={handleDeleteSubject}
+                        />
+                    </div>
                     <TestTasks 
                         test={test} 
                         tasks={testTasks}

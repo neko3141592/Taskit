@@ -11,23 +11,52 @@
 ## URL
 [Taskit](https://neko3141592.net)
 
+## 主な機能
+
+### 🎯 基本機能
+- タスク管理（作成・編集・削除・ステータス管理）
+- 教科ごとのタスク分類
+- タグによるタスク整理
+- カレンダー表示
+- テスト管理とスコア記録
+
+### ✨ AI機能（GPT-4o-mini搭載）
+- **AI学習計画生成**: タスク情報から最適な学習計画を自動生成
+  - 学習ステップの提案
+  - 推定所要時間の算出
+  - 難易度の判定
+  - 学習のコツとおすすめリソースの提示
+- **AIタスク提案**: 現在のタスクに関連する学習タスクを提案
+
 ## ビルド方法(ローカル)
 
 ### 必要なツール
 - Node.js (v24以上推奨)
 - Docker/Docker Compose
 - Git
-- Google Client ID & Google Client SECRET
-- OpenAI API Key
+
+### 必要な認証情報
+- Google OAuth: `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`
+- OpenAI API: `OPENAI_API_KEY`（AI機能を使用する場合）
 
 ### 手順
-1. .env.exampleを参考に、.envファイルを作成し必要な環境変数を記述する
-2. docker composeでビルド
+1. リポジトリをクローン
+2. `.env.example`を参考に、`.env`ファイルを作成
+   ```sh
+   cp .env.example .env
+   ```
+3. 必要な環境変数を記述
+   - `DATABASE_URL`: PostgreSQLデータベースURL
+   - `AUTH_SECRET`: NextAuth用のシークレットキー
+   - `NEXTAUTH_URL`: アプリケーションURL（開発環境では`http://localhost:3000`）
+   - `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`: Google OAuth認証情報
+   - `OPENAI_API_KEY`: OpenAI APIキー（AI機能使用時）
+4. Docker Composeでビルド
     ```sh
-        docker compose up --build
+    docker compose up --build
     ```
-3. 開発サーバーにアクセス
-- [localhost:3000](http://localhost:3000)
+5. 開発サーバーにアクセス
+   - [localhost:3000](http://localhost:3000)
 
 ### 推奨環境
 4GB以上のRAM, 20GB以上のストレージ空き容量

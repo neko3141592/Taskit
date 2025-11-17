@@ -113,10 +113,10 @@ export default function TestTasks({ className, test, tasks, onTasksChange }: Tes
 
     return (
         <>
-        <div className={`bg-white dark:bg-neutral-900 border border-gray-900/10 dark:border-neutral-700 rounded-sm w-full ${className}`}>
+        <div className={`bg-white dark:bg-neutral-900 rounded-sm w-full ${className}`}>
             <div className="px-6 py-6 border-b border-gray-900/5 dark:border-neutral-800">
                 <div className="flex items-center justify-between mb-6">
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">関連タスク</h3>
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">登録済みのタスク</h3>
                     <Button
                         onClick={openModal}
                         size="sm"

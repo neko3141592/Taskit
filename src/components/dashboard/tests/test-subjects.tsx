@@ -42,7 +42,7 @@ export default function TestSubjects({ subjects, handleAdd, handleDelete, classN
     };
 
     return (
-        <div className={`bg-white dark:bg-neutral-900 border border-gray-900/10 dark:border-neutral-700 rounded-sm ${className}`}>
+        <div className={`bg-white dark:bg-neutral-900  rounded-sm ${className}`}>
             <div className="px-6 py-4 border-b border-gray-900/5 dark:border-neutral-800">
                 <h2 className="text-base font-semibold text-gray-900 dark:text-white tracking-tight">教科</h2>
             </div>
@@ -63,7 +63,7 @@ export default function TestSubjects({ subjects, handleAdd, handleDelete, classN
                         onBlur={() => setTimeout(() => setFocused(false), 150)}
                     />
                     {focused && (
-                        <div className="absolute left-0 right-0 top-full mt-1 bg-white dark:bg-neutral-900 border border-gray-900/10 dark:border-neutral-700 max-w-xs rounded-sm max-h-48 overflow-auto z-20">
+                        <div className="absolute left-0 right-0 top-full mt-1 bg-white dark:bg-neutral-900  max-w-xs rounded-sm max-h-48 overflow-auto z-20">
                             {loading ? (
                                 <div className="flex items-center justify-center px-4 py-8">
                                     <Loader2 className="h-5 w-5 text-gray-400 dark:text-neutral-400 animate-spin" />
