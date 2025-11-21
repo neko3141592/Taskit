@@ -5,8 +5,9 @@ import axios from 'axios';
 import Link from 'next/link';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import TestAddDialog from '@/components/dashboard/tests/test-add-dialog';
-import { Book, ChevronRight, Loader2, Hourglass, Calendar} from 'lucide-react';
+import { Book, ChevronRight, Loader2, Hourglass, Calendar, FileText} from 'lucide-react';
 import { Input } from '@/components/ui/input';
+import { formatDateJST } from '@/lib/utils';
 
 
 
@@ -72,11 +73,11 @@ export default function Tests () {
                         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                             {filteredTests.map(test => (
                                 <Link key={test.id} href={`/dashboard/tests/${test.id}`} passHref>
-                                    <Card className="group hover:border-teal-500 shadow-none transition-all cursor-pointer h-full flex flex-col">
+                                    <Card className="group hover:border-teal-500 shadow-none transition-all cursor-pointer border border-neutral-200 dark:border-neutral-700 h-full flex flex-col">
                                         <CardHeader className="flex-grow">
                                             <div className="flex items-center gap-4">
                                                 <div className="p-3 rounded-full bg-teal-100">
-                                                    <Book className="h-6 w-6 text-teal-600" />
+                                                    <FileText className="h-6 w-6 text-teal-600" />
                                                 </div>
                                                 <CardTitle className="text-lg truncate">{test.name}</CardTitle>
                                             </div>
@@ -85,7 +86,7 @@ export default function Tests () {
                                             <div className="flex items-center gap-2">
                                                 <span className="flex items-center gap-1">
                                                     <Calendar className="h-4 w-4" />
-                                                    {new Date(test.startDate).toLocaleDateString()} ~ {new Date(test.endDate).toLocaleDateString()}
+                                                    {formatDateJST(test.startDate)} ~ {formatDateJST(test.endDate)}
                                                 </span>
                                             </div>
                                             <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-primary" />

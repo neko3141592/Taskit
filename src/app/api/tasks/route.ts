@@ -61,7 +61,7 @@ export async function POST(req: NextRequest) {
     }
     const uid = session.user.id;
 
-    const { title, description, dueDate, subjectId, status, tags } = await req.json();
+    const { title, description, dueDate, subjectId, status, tags, notificationDaysBefore } = await req.json();
 
     if (!title || !dueDate) {
         return NextResponse.json({ 
@@ -78,7 +78,8 @@ export async function POST(req: NextRequest) {
             userId: uid,
             subjectId,
             status,
-            tags
+            tags,
+            notificationDaysBefore
         });
 
         return NextResponse.json({ 

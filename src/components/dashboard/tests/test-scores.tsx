@@ -6,6 +6,7 @@ import { ChevronRight, Plus, TrendingUp, TrendingDown } from "lucide-react";
 import TestScoreEditDialog from "./test-score-edit-dialog";
 import axios from "axios";
 import { toast } from "sonner";
+import TestScoresChart from "./test-scores-chart";
 
 type TestScoresListProps = {
     test: Test;
@@ -24,9 +25,7 @@ export default function TestScoresList({ test, onEdit, disabled }: TestScoresLis
     const totalMaxValue = test.scores?.reduce((sum, score) => sum + (score.maxValue ?? 100), 0) || 0;
     const overallPercent = totalMaxValue > 0 ? (totalScore / totalMaxValue) * 100 : 0;
 
-    // ダミーの前回との差分
-    const scoreDiff = 12; // 前回から+12点
-    const percentDiff = 3.5; // 前回から+3.5%
+
 
     const handleEditScore = async (updatedScore: Score) => {
         try {
@@ -43,7 +42,7 @@ export default function TestScoresList({ test, onEdit, disabled }: TestScoresLis
 
     return (
         <div className={`transition-opacity ${disabled ? "opacity-50 pointer-events-none select-none" : ""}`}>
-            <div className="bg-white dark:bg-neutral-900 border border-gray-900/10 dark:border-neutral-700 rounded-sm">
+            <div className="bg-white dark:bg-neutral-900   rounded-sm">
                 <div className="px-6 py-6 border-b border-gray-900/5 dark:border-neutral-800">
                     <div className="flex items-center justify-center gap-12">
                         <div className="text-center">
@@ -53,20 +52,6 @@ export default function TestScoresList({ test, onEdit, disabled }: TestScoresLis
                                     {totalScore}
                                 </p>
                                 <span className="text-lg font-normal text-gray-400 dark:text-neutral-500 font-mono">/ {totalMaxValue}</span>
-                            </div>
-                            <div className="flex items-center justify-center gap-1 mt-1.5">
-                                {scoreDiff >= 0 ? (
-                                    <>
-                                        <TrendingUp className="h-3 w-3 text-green-600 dark:text-green-400" />
-                                        <span className="text-xs font-medium text-green-600 dark:text-green-400 font-mono">+{scoreDiff}</span>
-                                    </>
-                                ) : (
-                                    <>
-                                        <TrendingDown className="h-3 w-3 text-red-600 dark:text-red-400" />
-                                        <span className="text-xs font-medium text-red-600 dark:text-red-400 font-mono">{scoreDiff}</span>
-                                    </>
-                                )}
-                                <span className="text-xs text-gray-400 dark:text-neutral-500 ml-0.5">前回比</span>
                             </div>
                         </div>
 
@@ -79,20 +64,6 @@ export default function TestScoresList({ test, onEdit, disabled }: TestScoresLis
                                     {Math.round(overallPercent)}
                                 </p>
                                 <span className="text-lg font-normal text-gray-400 dark:text-neutral-500 font-mono">%</span>
-                            </div>
-                            <div className="flex items-center justify-center gap-1 mt-1.5">
-                                {percentDiff >= 0 ? (
-                                    <>
-                                        <TrendingUp className="h-3 w-3 text-green-600 dark:text-green-400" />
-                                        <span className="text-xs font-medium text-green-600 dark:text-green-400 font-mono">+{percentDiff}%</span>
-                                    </>
-                                ) : (
-                                    <>
-                                        <TrendingDown className="h-3 w-3 text-red-600 dark:text-red-400" />
-                                        <span className="text-xs font-medium text-red-600 dark:text-red-400 font-mono">{percentDiff}%</span>
-                                    </>
-                                )}
-                                <span className="text-xs text-gray-400 dark:text-neutral-500 ml-0.5">前回比</span>
                             </div>
                         </div>
                     </div>
@@ -157,7 +128,9 @@ export default function TestScoresList({ test, onEdit, disabled }: TestScoresLis
                                 );
                             })}
                         </div>
+                        
                     </div>
+                    
                 ) : (
                     <div className="flex flex-col items-center justify-center h-[280px] bg-white dark:bg-neutral-900">
                         <div className="w-12 h-12 bg-black/5 dark:bg-white/5 rounded-full flex items-center justify-center mb-4">
@@ -168,6 +141,10 @@ export default function TestScoresList({ test, onEdit, disabled }: TestScoresLis
                     </div>
                 )}
             </div>
+            <div className="mt-4">
+                <TestScoresChart test={test} />
+            </div>
+            
         </div>
     );
 }

@@ -9,7 +9,7 @@ import { set } from "date-fns";
 import { se } from "date-fns/locale";
 
 type TaskSuggestProps = {
-    currentTask: Task;
+    readonly currentTask: Task;
 };
 
 export default function TaskSuggest({ currentTask }: TaskSuggestProps) {

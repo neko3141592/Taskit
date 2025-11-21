@@ -1,7 +1,6 @@
 import { prisma } from '@/lib/prisma';
 import { Prisma } from '@/generated/prisma/client';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function extractJsonFromText(text: string): any {
     let jsonText = text.trim();
     if (jsonText.startsWith('```')) {
@@ -21,6 +20,7 @@ export async function generateTestStudyPlan(test: Test) {
             throw new Error("テスト情報が不足しています");
         }
 
+
         if (!process.env.OPENAI_API_URL) {
             throw new Error("OPENAI_API_URLが設定されていません");
         }
@@ -30,6 +30,7 @@ export async function generateTestStudyPlan(test: Test) {
         if (!process.env.OPENAI_API_MODEL) {
             throw new Error("OPENAI_API_MODELが設定されていません");
         }
+
 
         const subjectsInfo = test.scores && test.scores.length > 0
             ? test.scores.map((score: Score) => {
@@ -45,8 +46,8 @@ export async function generateTestStudyPlan(test: Test) {
 
         const prompt = `
             あなたは学習計画の専門家です。以下のテスト情報から、効果的な学習計画を立ててください。
-            テスト期間全体を考慮し、各教科のバランスを取った学習計画を提案してください。また、タスクを終わらせることを優先し、なるべく余計な負担をかけないようにしてください(まとめるなどはいらない)。
-            【現在の日時】${new Date().toLocaleString('ja-JP')}
+            テスト期間全体を考慮し、各教科のバランスを取った学習計画をタスク単位で提案してください。
+            なるべく短く簡潔な内容でお願いします。
 
             【テスト情報】
             テスト名: ${test.name}
@@ -54,9 +55,11 @@ export async function generateTestStudyPlan(test: Test) {
             開始日: ${new Date(test.startDate).toLocaleDateString('ja-JP')}
             終了日: ${new Date(test.endDate).toLocaleDateString('ja-JP')}
 
-            【登録されている教科】${subjectsInfo}
+            【登録されている教科】
+${subjectsInfo}
 
-            【終わらせるべきタスク】${tasksInfo}
+            【関連するタスク】
+${tasksInfo}
 
             以下のJSON形式で学習計画を出力してください：
 
@@ -78,6 +81,9 @@ export async function generateTestStudyPlan(test: Test) {
                 "学習のコツ2",
                 "学習のコツ3"
             ],
+            "resources": [
+                "おすすめの参考書や教材"
+            ]
             }
         `;
 
@@ -101,7 +107,6 @@ export async function generateTestStudyPlan(test: Test) {
                 },
                 ],
                 temperature: 0.7,
-                max_tokens: 2000,
             }),
         });
 

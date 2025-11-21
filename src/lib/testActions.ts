@@ -120,3 +120,47 @@ export async function updateSubject(scoreId: string, data: Partial<Score>) {
         throw new Error(`Failed to update subject: ${error instanceof Error ? error.message : String(error)}`);
     }
 }
+
+export async function getTodosByDate(start: string, end: string, userId: string) {
+    if (!start || !end) {
+        throw new Error('start and end dates are required');
+    }
+    try {
+        return await prisma.todo.findMany({
+            orderBy: { dueDate: 'asc' },
+            where: {
+                test: {
+                    userId: userId
+                },
+                dueDate: {
+                    gte: new Date(start),
+                    lte: new Date(end)
+                }
+            },
+            include: {
+                test: {
+                    select: {
+                        id: true,
+                        name: true
+                    }
+                }
+            }
+        });
+    } catch (error) {
+        console.error('getTodosByDate error:', error);
+        throw new Error(`Failed to get todos by date: ${error instanceof Error ? error.message : String(error)}`);
+    }
+}
+
+export async function DeleteTodosByTestId(id: string) {
+    try {
+        if (!id) throw new Error('Test id is required');
+        const deletedTodo = await prisma.todo.deleteMany({
+            where: { testId: id }
+        });
+        return deletedTodo;
+    } catch (error) {
+        console.error('DeleteTodosByTestId error:', error);
+        throw new Error(`Failed to delete todos: ${error instanceof Error ? error.message : String(error)}`);
+    }
+}

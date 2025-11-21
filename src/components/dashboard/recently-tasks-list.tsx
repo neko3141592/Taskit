@@ -1,6 +1,7 @@
 import { CalendarIcon } from "lucide-react";
 import { getStatusBadge } from "@/components/ui/status-budge";
 import Link from "next/link";
+import { formatDateJST } from "@/lib/utils";
 import {
     Pagination,
     PaginationContent,
@@ -24,8 +25,7 @@ type RecentlyTasksListProps = {
 
 export default function RecentlyTasksList(props: RecentlyTasksListProps) {
     const formatDate = (dateString: string) => {
-        const date = new Date(dateString);
-        return date.toLocaleDateString('ja-JP', {
+        return formatDateJST(dateString, {
             year: 'numeric', 
             month: 'short', 
             day: 'numeric'

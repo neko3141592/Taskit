@@ -9,25 +9,19 @@ services:
       - /app/node_modules
     environment:
       - CHOKIDAR_USEPOLLING=true
-  db:
-    image: postgres:15
-    container_name: taskit-postgres
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
-    ports:
-      - "5432:5432"
-    volumes:
-      - taskit-postgres-data:/var/lib/postgresql/data
-  mailhog:
-    image: mailhog/mailhog
-    container_name: taskit-mailhog
-    ports:
-      - "1025:1025"
-      - "8025:8025"   
-volumes:
-  taskit-postgres-data:
+#   db:
+#     image: postgres:15
+#     container_name: taskit-postgres
+#     environment:
+#       POSTGRES_USER: ${POSTGRES_USER}
+#       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+#       POSTGRES_DB: ${POSTGRES_DB}
+#     ports:
+#       - "5432:5432"
+#     volumes:
+#       - taskit-postgres-data:/var/lib/postgresql/data 
+# volumes:
+#   taskit-postgres-data:
 
 
 

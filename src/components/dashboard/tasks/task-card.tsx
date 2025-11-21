@@ -3,6 +3,7 @@
 import { CalendarIcon } from "lucide-react";
 import { getStatusBadge } from "@/components/ui/status-budge";
 import Link from "next/link";
+import { formatDateJST } from "@/lib/utils";
 
 type TaskCardProps = {
     task: Task;
@@ -10,8 +11,7 @@ type TaskCardProps = {
 
 export default function TaskCard({ task }: TaskCardProps) {
     const formatDate = (dateString: string) => {
-        const date = new Date(dateString);
-        return date.toLocaleDateString('ja-JP', {
+        return formatDateJST(dateString, {
             year: 'numeric',
             month: 'short',
             day: 'numeric'

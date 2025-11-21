@@ -20,8 +20,11 @@ import {
 import CreateTaskModal from "./create-task-modal";
 import { Input } from "../ui/input";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { useState } from "react";
 
 export default function Header() {
+    const [isCreateTaskOpen, setIsCreateTaskOpen] = useState(false);
+    
     const handleLogout = async () => {
         await signOut({ callbackUrl: "/login" });
     };
@@ -35,31 +38,7 @@ export default function Header() {
             <div className="flex items-center gap-2 relative">
                 <ThemeToggle />
                 <NotificationsDialog />
-                <Dialog>
-                    <DialogTrigger asChild>
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            className="p-2 bg-transparent hover:bg-transparent hover:text-gray-500 hover:shadow-none focus:bg-transparent active:bg-transparent"
-                            style={{ boxShadow: "none" }}
-                        >
-                            <Search className="h-5 w-5 text-gray-500" />
-                        </Button>
-                    </DialogTrigger>
-                    <DialogContent className="max-w-[350px]">
-                        <DialogHeader>
-                            <DialogTitle>クイック検索</DialogTitle>
-                        </DialogHeader>
-                        <form>
-                            <Input
-                                type="text"
-                                placeholder="キーワードを入力"
-                                className="mt-2"
-                            />
-                        </form>
-                    </DialogContent>
-                </Dialog>
-                <Dialog>
+                <Dialog open={isCreateTaskOpen} onOpenChange={setIsCreateTaskOpen}>
                     <DialogTrigger asChild>
                         <Button
                             variant="default"
@@ -70,7 +49,7 @@ export default function Header() {
                             作成
                         </Button>
                     </DialogTrigger>
-                    <CreateTaskModal />
+                    <CreateTaskModal onClose={() => setIsCreateTaskOpen(false)} />
                 </Dialog>
             </div>
         </header>

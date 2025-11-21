@@ -32,9 +32,10 @@ type TaskFiltersProps = {
     filters: TaskFiltersType;
     onFilterChange: (filters: TaskFiltersType) => void;
     onReset: () => void;
+    hideSubjectFilter?: boolean;
 };
 
-export default function TaskFilters({ subjects, tags, filters, onFilterChange, onReset }: TaskFiltersProps) {
+export default function TaskFilters({ subjects, tags, filters, onFilterChange, onReset, hideSubjectFilter = false }: TaskFiltersProps) {
     const [isOpen, setIsOpen] = useState(false);
     
     const handleChange = (key: string, value: string) => {
@@ -43,7 +44,6 @@ export default function TaskFilters({ subjects, tags, filters, onFilterChange, o
 
     const hasActiveFilters = filters.status !== 'all' || filters.subjectId !== 'all' || filters.tagId !== 'all' || filters.search !== '';
 
-    // 選択中の教科を取得
     const selectedSubject = subjects.find(s => s.id === filters.subjectId);
 
     return (
@@ -73,35 +73,37 @@ export default function TaskFilters({ subjects, tags, filters, onFilterChange, o
                         </Select>
 
                         {/* 教科セレクト */}
-                        <Select value={filters.subjectId} onValueChange={(value) => handleChange('subjectId', value)}>
-                            <SelectTrigger className="w-[120px] h-9 border-neutral-300 dark:border-neutral-600 dark:bg-neutral-800 dark:text-white shadow-none rounded-lg text-sm">
-                                {selectedSubject ? (
-                                    <div className="flex items-center gap-2 overflow-hidden w-full">
-                                        <div
-                                            className="h-3 w-3 rounded-full flex-shrink-0"
-                                            style={{ backgroundColor: selectedSubject.color }}
-                                        />
-                                        <span className="truncate">{selectedSubject.name}</span>
-                                    </div>
-                                ) : (
-                                    <SelectValue placeholder="すべて" />
-                                )}
-                            </SelectTrigger>
-                            <SelectContent className="border-neutral-200 dark:border-neutral-700 dark:bg-neutral-800">
-                                <SelectItem value="all">すべて</SelectItem>
-                                {subjects.map((subject) => (
-                                    <SelectItem key={subject.id} value={subject.id}>
-                                        <div className="flex items-center gap-2 max-w-full">
+                        {!hideSubjectFilter && (
+                            <Select value={filters.subjectId} onValueChange={(value) => handleChange('subjectId', value)}>
+                                <SelectTrigger className="w-[120px] h-9 border-neutral-300 dark:border-neutral-600 dark:bg-neutral-800 dark:text-white shadow-none rounded-lg text-sm">
+                                    {selectedSubject ? (
+                                        <div className="flex items-center gap-2 overflow-hidden w-full">
                                             <div
                                                 className="h-3 w-3 rounded-full flex-shrink-0"
-                                                style={{ backgroundColor: subject.color }}
+                                                style={{ backgroundColor: selectedSubject.color }}
                                             />
-                                            <span className="truncate">{subject.name}</span>
+                                            <span className="truncate">{selectedSubject.name}</span>
                                         </div>
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
+                                    ) : (
+                                        <SelectValue placeholder="すべて" />
+                                    )}
+                                </SelectTrigger>
+                                <SelectContent className="border-neutral-200 dark:border-neutral-700 dark:bg-neutral-800">
+                                    <SelectItem value="all">すべて</SelectItem>
+                                    {subjects.map((subject) => (
+                                        <SelectItem key={subject.id} value={subject.id}>
+                                            <div className="flex items-center gap-2 max-w-full">
+                                                <div
+                                                    className="h-3 w-3 rounded-full flex-shrink-0"
+                                                    style={{ backgroundColor: subject.color }}
+                                                />
+                                                <span className="truncate">{subject.name}</span>
+                                            </div>
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        )}
 
                         {/* タグセレクト */}
                         <Select value={filters.tagId} onValueChange={(value) => handleChange('tagId', value)}>
@@ -198,38 +200,40 @@ export default function TaskFilters({ subjects, tags, filters, onFilterChange, o
                                 </div>
 
                                 {/* 教科 */}
-                                <div className="space-y-2">
-                                    <label className="text-xs font-medium text-gray-600 dark:text-neutral-400">教科</label>
-                                    <Select value={filters.subjectId} onValueChange={(value) => handleChange('subjectId', value)}>
-                                        <SelectTrigger className="h-9 border-neutral-300 dark:border-neutral-600 dark:bg-neutral-800 dark:text-white shadow-none rounded-lg text-sm">
-                                            {selectedSubject ? (
-                                                <div className="flex items-center gap-2 overflow-hidden w-full">
-                                                    <div
-                                                        className="h-3 w-3 rounded-full flex-shrink-0"
-                                                        style={{ backgroundColor: selectedSubject.color }}
-                                                    />
-                                                    <span className="truncate">{selectedSubject.name}</span>
-                                                </div>
-                                            ) : (
-                                                <SelectValue placeholder="すべて" />
-                                            )}
-                                        </SelectTrigger>
-                                        <SelectContent className="border-neutral-200 dark:border-neutral-700 dark:bg-neutral-800">
-                                            <SelectItem value="all">すべて</SelectItem>
-                                            {subjects.map((subject) => (
-                                                <SelectItem key={subject.id} value={subject.id}>
-                                                    <div className="flex items-center gap-2 max-w-full">
+                                {!hideSubjectFilter && (
+                                    <div className="space-y-2">
+                                        <label className="text-xs font-medium text-gray-600 dark:text-neutral-400">教科</label>
+                                        <Select value={filters.subjectId} onValueChange={(value) => handleChange('subjectId', value)}>
+                                            <SelectTrigger className="h-9 border-neutral-300 dark:border-neutral-600 dark:bg-neutral-800 dark:text-white shadow-none rounded-lg text-sm">
+                                                {selectedSubject ? (
+                                                    <div className="flex items-center gap-2 overflow-hidden w-full">
                                                         <div
                                                             className="h-3 w-3 rounded-full flex-shrink-0"
-                                                            style={{ backgroundColor: subject.color }}
+                                                            style={{ backgroundColor: selectedSubject.color }}
                                                         />
-                                                        <span className="truncate">{subject.name}</span>
+                                                        <span className="truncate">{selectedSubject.name}</span>
                                                     </div>
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                </div>
+                                                ) : (
+                                                    <SelectValue placeholder="すべて" />
+                                                )}
+                                            </SelectTrigger>
+                                            <SelectContent className="border-neutral-200 dark:border-neutral-700 dark:bg-neutral-800">
+                                                <SelectItem value="all">すべて</SelectItem>
+                                                {subjects.map((subject) => (
+                                                    <SelectItem key={subject.id} value={subject.id}>
+                                                        <div className="flex items-center gap-2 max-w-full">
+                                                            <div
+                                                                className="h-3 w-3 rounded-full flex-shrink-0"
+                                                                style={{ backgroundColor: subject.color }}
+                                                            />
+                                                            <span className="truncate">{subject.name}</span>
+                                                        </div>
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                )}
 
                                 {/* タグ */}
                                 <div className="space-y-2">

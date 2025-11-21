@@ -8,6 +8,7 @@ import axios from 'axios';
 import { toast } from 'sonner';
 import Spinner from '../ui/spinner';
 import { useRouter } from "next/navigation";
+import { formatDateTimeJST } from '@/lib/utils';
 
 const LIMIT = 5;
 
@@ -108,34 +109,34 @@ export default function NotificationsDialog() {
                 </Button>
             </PopoverTrigger>
             <PopoverContent align="end" className="w-[340px] p-0">
-                <div className="px-4 py-3 border-b font-bold text-gray-700">通知</div>
+                <div className="px-4 py-3 border-b border-neutral-200 dark:border-neutral-700 font-bold text-neutral-900 dark:text-white">通知</div>
                 {loading ? (
                     <div className="flex flex-col items-center justify-center py-16">
                         <Spinner className="m-8 mx-auto" />
                     </div>
                 ) : (
-                    <div className="max-h-[320px] overflow-y-auto divide-y">
+                    <div className="max-h-[320px] overflow-y-auto divide-y divide-neutral-200 dark:divide-neutral-700">
                         {notifications.length === 0 && (
-                            <div className="py-8 text-center text-gray-400 text-sm">通知はありません</div>
+                            <div className="py-8 text-center text-neutral-500 dark:text-neutral-400 text-sm">通知はありません</div>
                         )}
                         {notifications.map(n => (
                             <button
                                 key={n.id}
-                                className="flex items-center gap-3 px-4 py-3 w-full text-left hover:bg-gray-50 transition"
+                                className="flex items-center gap-3 px-4 py-3 w-full text-left hover:bg-neutral-100 dark:hover:bg-neutral-800 transition"
                                 onClick={() => handleNotificationClick(n)}
                             >
                                 {n.isRead ? (
                                     <div className="w-2 h-2 rounded-full bg-transparent"></div>
                                 ) : (
-                                    <div className="w-2 h-2 rounded-full bg-teal-500"></div>
+                                    <div className="w-2 h-2 rounded-full bg-neutral-900 dark:bg-neutral-100"></div>
                                 )}
-                                <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center font-bold text-lg ">
-                                    {n.icon ?? <Bell className='text-gray-500' />}
+                                <div className="w-10 h-10 rounded-full bg-neutral-200 dark:bg-neutral-700 flex items-center justify-center font-bold text-lg ">
+                                    {n.icon ?? <Bell className='text-neutral-500 dark:text-neutral-400' />}
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                    <div className="text-sm font-semibold text-gray-800">{n.title}</div>
-                                    <div className="text-xs text-gray-500">{n.message}</div>
-                                    <div className="text-xs text-gray-400">{new Date(n.createdAt).toLocaleString()}</div>
+                                    <div className="text-sm font-semibold text-neutral-900 dark:text-white">{n.title}</div>
+                                    <div className="text-xs text-neutral-600 dark:text-neutral-400">{n.message}</div>
+                                    <div className="text-xs text-neutral-500 dark:text-neutral-500">{formatDateTimeJST(n.createdAt)}</div>
                                 </div>
                             </button>
                         ))}
@@ -151,7 +152,7 @@ export default function NotificationsDialog() {
                             </Button>
                         )}
                         {!hasMore && notifications.length > 0 && (
-                            <div className="py-2 text-center text-gray-400 text-xs">すべて表示しました</div>
+                            <div className="py-2 text-center text-neutral-500 dark:text-neutral-400 text-xs">すべて表示しました</div>
                         )}
                     </div>
                 )}

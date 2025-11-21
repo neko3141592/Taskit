@@ -26,6 +26,8 @@ interface Test {
     updatedAt: string;
 }
 
+
+
 interface Subject {
     id: string;
     name: string;
@@ -103,12 +105,28 @@ interface StudyPlan {
     estimatedTime: string;
     difficulty: string;
     testId: string;
-    steps: {
-        step: number;
-        title: string;
-        dueDate: string;
-        description: string;
-        estimatedMinutes: number;
-    }[];
+    steps: StudyPlanStep[];
     tips: string[];
 };
+
+interface StudyPlanStep {
+    id: string;
+    testId: string;
+    step: number;
+    title: string;
+    dueDate: string;
+    description: string;
+    estimatedMinutes: number;
+}
+interface Todo {
+    id: string;
+    testId: string;
+    step: number;
+    title: string;
+    dueDate: string;
+    description: string;
+    estimatedMinutes: number;
+    completed: boolean;
+    createdAt: string;
+    updatedAt: string;
+}

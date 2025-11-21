@@ -19,7 +19,13 @@ type TaskFiltersType = {
 
 const ITEMS_PER_PAGE = 10;
 
-export default function TaskListContainer() {
+type Props = {
+    readonly filterSubjectId?: string;
+    readonly title?: string;
+    readonly hideSubjectFilter?: boolean;
+};
+
+export default function TaskListContainer({ filterSubjectId, title = "すべてのタスク", hideSubjectFilter = false }: Props) {
     const { data: session } = useSession();
     const userId = session?.user?.id;
 
@@ -33,7 +39,7 @@ export default function TaskListContainer() {
 
     const [filters, setFilters] = useState<TaskFiltersType>({
         status: 'all',
-        subjectId: 'all',
+        subjectId: filterSubjectId || 'all',
         tagId: 'all',
         search: '',
         sortBy: 'dueDate',
@@ -145,7 +151,7 @@ export default function TaskListContainer() {
             <Card className="border-neutral-200 dark:border-neutral-700 shadow-none">
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2 text-xl font-semibold text-gray-900 dark:text-white">
-                        すべてのタスク
+                        {title}
                         <span className="text-sm font-normal text-gray-500 dark:text-neutral-400 ml-2">
                             ({totalCount}件)
                         </span>
@@ -158,6 +164,7 @@ export default function TaskListContainer() {
                         filters={filters}
                         onFilterChange={handleFilterChange}
                         onReset={handleFilterReset}
+                        hideSubjectFilter={hideSubjectFilter}
                     />
 
                     <div className="mt-6">

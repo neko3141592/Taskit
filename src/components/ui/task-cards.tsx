@@ -4,6 +4,7 @@ import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Calendar} from "lucide-react";
 import { getStatusBadge } from "@/components/ui/status-budge";
+import { formatDateJST } from "@/lib/utils";
 
 
 type taskCardsProps = {
@@ -26,8 +27,7 @@ export default function TaskCards(props: taskCardsProps) {
     } = props;
 
     const formatDate = (dateString: string) => {
-        const date = new Date(dateString);
-        return date.toLocaleDateString('ja-JP', {
+        return formatDateJST(dateString, {
             year: 'numeric', 
             month: 'short', 
             day: 'numeric'

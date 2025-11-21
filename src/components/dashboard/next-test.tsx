@@ -4,6 +4,7 @@ import { ArrowRight, Calendar } from "lucide-react";
 import Link from "next/link";
 import { getNextTest } from "@/lib/testActions";
 import { auth } from "@/auth";
+import { formatDateJST } from "@/lib/utils";
 
 export default async function NextTest() {
     const session = await auth();
@@ -32,7 +33,7 @@ export default async function NextTest() {
                                     <div className="flex items-center gap-2">
                                         <Calendar className="h-4 w-4 text-gray-400 dark:text-neutral-400" />
                                         <span className="text-gray-600 dark:text-neutral-300">
-                                        {new Date(nextTest.startDate).toLocaleDateString('ja-JP', {
+                                        {formatDateJST(nextTest.startDate, {
                                             month: 'short',
                                             day: 'numeric'
                                         })}
@@ -43,7 +44,7 @@ export default async function NextTest() {
                                 <div className="flex items-center gap-2">
                                     <Calendar className="h-4 w-4 text-gray-400 dark:text-gray-500" />
                                     <span className="text-gray-600 dark:text-gray-300">
-                                        {new Date(nextTest.endDate).toLocaleDateString('ja-JP', {
+                                        {formatDateJST(nextTest.endDate, {
                                             month: 'short',
                                             day: 'numeric'
                                         })}

@@ -3,11 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import axios from 'axios';
-import Link from 'next/link';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import TestAddDialog from '@/components/dashboard/tests/test-add-dialog';
-import { Book, ChevronRight, Loader2, Hourglass, Calendar } from 'lucide-react';
-import { Input } from '@/components/ui/input';
+import {  Loader2,  } from 'lucide-react';
 import TestTitle from '@/components/dashboard/tests/test-title';
 import TestScores from '@/components/dashboard/tests/test-scores';import {
   Tabs,
@@ -19,6 +15,13 @@ import  TestSubjects  from '@/components/dashboard/tests/test-subjects';
 import { toast } from 'sonner';
 import TestTasks from '@/components/dashboard/tests/test-tasks';
 import TestStudyPlan from '@/components/dashboard/tests/test-study-plan';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion"
+import TestTodo from '@/components/dashboard/tests/test-todo';
 
 export default function Test () {
 
@@ -142,20 +145,39 @@ export default function Test () {
                         スコアボード
                     </TabsTrigger>
                 </TabsList>
-                <TabsContent value="overview" className='sm:flex gap-4 '>
-                    <div className='space-y-4 sm:w-1/2 w-full sm:max-w-sm'>
-                        <TestStudyPlan test={test} />
-                        <TestSubjects 
-                            subjects={test.scores?.map(score => score.subject!)} 
-                            handleAdd={handleAddSubject} 
-                            handleDelete={handleDeleteSubject}
+                <TabsContent value="overview" >
+                    <div className='sm:flex gap-4'>
+                        <div className='w-full  sm:w-1/2 sm:max-w-sm '>
+                            <TestSubjects 
+                                subjects={test.scores?.map(score => score.subject!)} 
+                                handleAdd={handleAddSubject} 
+                                handleDelete={handleDeleteSubject}
+                            />
+                        </div>
+                        <div className='w-full mt-4 sm:flex-1  sm:mt-0'>
+                            <TestTasks 
+                            test={test} 
+                            tasks={testTasks}
+                            onTasksChange={fetchTestTasks}
                         />
+                        </div>
                     </div>
-                    <TestTasks 
-                        test={test} 
-                        tasks={testTasks}
-                        onTasksChange={fetchTestTasks}
-                    />
+                    <div className='mt-4'>
+                        <Accordion type='multiple' >
+                        <AccordionItem value="item-1">
+                            <AccordionTrigger className='px-2 py-6'>学習計画</AccordionTrigger>
+                            <AccordionContent>
+                                <TestStudyPlan test={test} />   
+                            </AccordionContent>
+                        </AccordionItem>
+                        <AccordionItem value="item-2">
+                            <AccordionTrigger className='px-2 py-6'>TODO</AccordionTrigger>
+                            <AccordionContent>
+                                <TestTodo test={test} />
+                            </AccordionContent>
+                        </AccordionItem>
+                    </Accordion>
+                    </div>
                 </TabsContent>
                 <TabsContent value="scores">
                     <TestScores test={test} onEdit={handleEditScore} />

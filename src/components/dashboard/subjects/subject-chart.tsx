@@ -15,6 +15,7 @@ import { Line } from 'react-chartjs-2';
 import axios from 'axios';
 import { TrendingUp } from 'lucide-react';
 import { useTheme } from 'next-themes';
+import { max } from 'date-fns';
 
 ChartJS.register(
   CategoryScale,
@@ -69,7 +70,7 @@ export function SubjectChart({ subjectId }: { subjectId: string }) {
         ticks: {
           color: isDark ? '#a3a3a3' : '#6b7280',
           font: {
-            size: 11,
+            size: 8,
           }
         }
       },
@@ -84,12 +85,14 @@ export function SubjectChart({ subjectId }: { subjectId: string }) {
         ticks: {
           color: isDark ? '#a3a3a3' : '#6b7280',
           font: {
-            size: 11,
+            size: 10,
           },
           callback: function(value: number) {
             return value + '%';
           }
-        }
+        },
+        max: 100,
+        min: 0
       }
     }
   };

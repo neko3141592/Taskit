@@ -29,6 +29,7 @@ export async function getTasks(options: {
     dueDateTo?: string;
     title?: string; 
 }) {
+    console.log('getTasks options:', options);
     try {
         const {
             userId,
@@ -100,6 +101,7 @@ export async function getTasks(options: {
         const totalCount = await prisma.task.count({ where });
 
         return { tasks, totalCount };
+
     } catch (error) {
         console.error('getTasks error:', error);
         throw new Error(`Failed to get tasks: ${error instanceof Error ? error.message : String(error)}`);
@@ -118,6 +120,7 @@ export async function updateTaskById(id: string, body: Task & { tags?: string[] 
                 dueDate: body.dueDate,
                 subjectId: body.subjectId,
                 testId: body.testId,
+                notificationDaysBefore: body.notificationDaysBefore,
                 tags: body.tags
                     ? {
                         set: [],
@@ -137,6 +140,7 @@ export async function updateTaskById(id: string, body: Task & { tags?: string[] 
     }
 }
 
+//AI CALLABLE
 export async function createTask(data: {
     title: string;
     description: string;
@@ -145,8 +149,10 @@ export async function createTask(data: {
     subjectId?: string;
     status?: string;
     tags?: string[];
+    notificationDaysBefore?: number;
 }){
     try {
+        console.log('createTask args:', data);
         if (!data.title) throw new Error('Task title is required');
         if (!data.dueDate) throw new Error('Task dueDate is required');
         if (!data.userId) throw new Error('Task userId is required');
@@ -158,6 +164,7 @@ export async function createTask(data: {
                 userId: data.userId,
                 subjectId: data.subjectId ?? null,
                 status: data.status as unknown as TaskStatus ?? 'NOT_STARTED',
+                notificationDaysBefore: data.notificationDaysBefore ?? null,
                 tags: data.tags && Array.isArray(data.tags)
                     ? {
                         connectOrCreate: data.tags.map((tagName: string) => ({
@@ -175,12 +182,15 @@ export async function createTask(data: {
     }
 }
 
-export async function deleteTaskById(id: string): Promise<void> {
+
+//AI CALLABLE
+export async function deleteTaskById(id: string): Promise<{ success: boolean; message: string }> {
     try {
         if (!id) throw new Error('Task id is required');
         await prisma.task.delete({
             where: { id }
         });
+        return { success: true, message: `Task ${id} deleted successfully` };
     } catch (error) {
         console.error('deleteTaskById error:', error);
         throw new Error(`Failed to delete task: ${error instanceof Error ? error.message : String(error)}`);

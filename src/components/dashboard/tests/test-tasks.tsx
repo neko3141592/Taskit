@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { Progress } from "@/components/ui/progress";
-import { CheckCircle2, Circle, Book, Plus, X } from "lucide-react";
+import { CheckCircle2, Circle, Book, Plus, X, Loader2, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
     Dialog,
     DialogContent,
@@ -16,10 +17,10 @@ import axios from "axios";
 import { useSession } from "next-auth/react";
 
 type TestTasksProps = {
-    className?: string;
-    test: Test;
-    tasks: Task[];
-    onTasksChange: () => void;
+    readonly className?: string;
+    readonly test: Test;
+    readonly tasks: Task[];
+    readonly onTasksChange: () => void;
 };
 
 export default function TestTasks({ className, test, tasks, onTasksChange }: TestTasksProps) {
@@ -105,195 +106,196 @@ export default function TestTasks({ className, test, tasks, onTasksChange }: Tes
         setSearchQuery("");
     };
 
-    const filteredTasks = availableTasks;
-
     const completedCount = tasks.filter(task => task.status === 'COMPLETED').length;
     const totalCount = tasks.length;
     const completionRate = totalCount > 0 ? (completedCount / totalCount) * 100 : 0;
+    const totalPages = Math.ceil(totalAvailable / ITEMS_PER_PAGE);
 
     return (
         <>
-        <div className={`bg-white dark:bg-neutral-900 rounded-sm w-full ${className}`}>
-            <div className="px-6 py-6 border-b border-gray-900/5 dark:border-neutral-800">
-                <div className="flex items-center justify-between mb-6">
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">登録済みのタスク</h3>
-                    <Button
-                        onClick={openModal}
-                        size="sm"
-                        variant="outline"
-                        className="gap-2"
-                    >
-                        <Plus className="h-4 w-4" />
-                        タスクを追加
-                    </Button>
-                </div>
-                <div className="flex items-center justify-center gap-12 mb-6">
-                    <div className="text-center">
-                        <p className="text-xs text-gray-500 dark:text-neutral-400 font-medium mb-1.5">完了タスク</p>
-                        <div className="flex items-baseline justify-center gap-2">
-                            <p className="text-3xl font-bold text-gray-900 dark:text-white font-mono">
+        <div className="relative h-full">
+            <Card className={`shadow-none border-neutral-200 dark:border-neutral-700 h-full ${className}`}>
+                <CardContent className="py-0 px-4 space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="p-4 rounded-sm border border-neutral-200 dark:border-neutral-700 text-center">
+                            <p className="text-xs text-muted-foreground mb-2">完了タスク</p>
+                            <p className="text-2xl font-bold font-mono">
                                 {completedCount}
+                                <span className="text-sm text-muted-foreground font-normal ml-1">/ {totalCount}</span>
                             </p>
-                            <span className="text-lg font-normal text-gray-400 dark:text-neutral-500 font-mono">/ {totalCount}</span>
                         </div>
-                    </div>
-                    <div className="w-px h-16 bg-gray-900/10 dark:bg-neutral-700" />
-                    <div className="text-center">
-                        <p className="text-xs text-gray-500 dark:text-neutral-400 font-medium mb-1.5">進捗率</p>
-                        <div className="flex items-baseline justify-center gap-1">
-                            <p className="text-3xl font-bold text-gray-900 dark:text-white font-mono">
+                        <div className="p-4 rounded-sm border border-neutral-200 dark:border-neutral-700 text-center">
+                            <p className="text-xs text-muted-foreground mb-2">進捗率</p>
+                            <p className="text-2xl font-bold font-mono">
                                 {Math.round(completionRate)}
+                                <span className="text-sm text-muted-foreground font-normal">%</span>
                             </p>
-                            <span className="text-lg font-normal text-gray-400 dark:text-neutral-500 font-mono">%</span>
                         </div>
                     </div>
-                </div>
-                <div className="space-y-2">
-                    <Progress value={completionRate} className="h-2" />
-                    <p className="text-xs text-gray-500 dark:text-neutral-400 text-center">
-                        {completedCount} / {totalCount} タスク完了
-                    </p>
-                </div>
-            </div>
-            {tasks.length > 0 ? (
-                <div className="px-4 py-2">
-                    <div className="space-y-3">
-                        {tasks.map((task) => (
-                            <div
-                                key={task.id}
-                                className="flex items-center gap-3 p-3 rounded-sm bg-white dark:bg-neutral-800 border hover:border-teal-500 transition cursor-pointer border-gray-200 dark:border-neutral-700"
-                            >
-                                {task.status === 'COMPLETED' ? (
-                                    <CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-400 flex-shrink-0" />
-                                ) : (
-                                    <Circle className="h-5 w-5 text-gray-300 dark:text-neutral-600 flex-shrink-0" />
-                                )}
-                                <div
-                                    className="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center"
-                                    style={{
-                                        backgroundColor: `${task.subject?.color ?? "#E5E7EB"}22`,
-                                    }}
-                                >
-                                    <Book className="w-5 h-5" style={{ color: task.subject?.color ?? "#6366F1" }} />
-                                </div>
-                                <div className="flex-1 min-w-0">
-                                    <div className={`text-base font-semibold truncate ${task.status === 'COMPLETED' ? 'text-gray-400 dark:text-neutral-500 line-through' : 'text-gray-800 dark:text-white'}`}>
-                                        {task.title}
-                                    </div>
-                                    <div className={`text-xs truncate ${task.status === 'COMPLETED' ? 'text-gray-300 dark:text-neutral-600' : 'text-gray-500 dark:text-neutral-400'}`}>
-                                        {task.description}
-                                    </div>
-                                </div>
-                                <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() => handleRemoveTask(task.id)}
-                                    className="h-8 w-8 p-0 hover:bg-red-50 dark:hover:bg-red-900/20"
-                                >
-                                    <X className="h-4 w-4 text-red-600 dark:text-red-400" />
-                                </Button>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            ) : (
-                <div className="flex flex-col items-center justify-center h-[280px] bg-white dark:bg-neutral-900">
-                    <div className="w-12 h-12 bg-black/5 dark:bg-white/5 rounded-full flex items-center justify-center mb-4">
-                        <Plus className="h-6 w-6 text-gray-400 dark:text-neutral-400" />
-                    </div>
-                    <p className="text-sm font-medium text-gray-900 dark:text-white">タスクがありません</p>
-                    <p className="text-xs text-gray-500 dark:test-neutral-400 mt-1">タスクを追加して進捗を確認しましょう</p>
-                </div>
-            )}
-        </div>
 
-        <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-            <DialogContent className="sm:max-w-[600px] border-neutral-200 dark:border-neutral-700 dark:bg-neutral-900">
-                <DialogHeader>
-                    <DialogTitle className="text-xl font-semibold text-gray-900 dark:text-white">
-                        タスクを追加
-                    </DialogTitle>
-                </DialogHeader>
-                
-                <div className="space-y-4">
-                    <Input
-                        placeholder="タスクを検索..."
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        className="dark:bg-neutral-800 dark:border-neutral-700"
-                    />
+                    <div className="space-y-2">
+                        <Progress value={completionRate} className="h-2" />
+                        <p className="text-xs text-muted-foreground text-center">
+                            {completedCount} / {totalCount} タスク完了
+                        </p>
+                    </div>
 
-                    <div className="max-h-[400px] overflow-y-auto space-y-2">
-                        {isLoadingAvailable ? (
-                            <div className="flex justify-center py-8">
-                                <p className="text-sm text-gray-500 dark:text-neutral-400">読み込み中...</p>
-                            </div>
-                        ) : filteredTasks.length > 0 ? (
-                            <>
-                                {filteredTasks.map((task) => (
+                    {tasks.length > 0 ? (
+                        <div className="space-y-2 max-h-[350px] overflow-y-auto pr-2">
+                            {tasks.map((task) => (
                                 <div
                                     key={task.id}
-                                    className="flex items-center gap-3 p-3 rounded-lg border border-neutral-200 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition"
+                                    className="group flex items-center gap-3 p-3 rounded-sm border border-neutral-200 dark:border-neutral-700 hover:border-teal-500 dark:hover:border-teal-500 transition-colors"
                                 >
+                                    {task.status === 'COMPLETED' ? (
+                                        <CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-400 flex-shrink-0" />
+                                    ) : (
+                                        <Circle className="h-5 w-5 text-gray-300 dark:text-neutral-600 flex-shrink-0" />
+                                    )}
                                     <div
-                                        className="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center"
+                                        className="flex-shrink-0 w-9 h-9 rounded-full flex items-center justify-center"
                                         style={{
                                             backgroundColor: `${task.subject?.color ?? "#E5E7EB"}22`,
                                         }}
                                     >
-                                        <Book className="w-5 h-5" style={{ color: task.subject?.color ?? "#6366F1" }} />
+                                        <Book className="w-4 h-4" style={{ color: task.subject?.color ?? "#6366F1" }} />
                                     </div>
                                     <div className="flex-1 min-w-0">
-                                        <div className="text-sm font-semibold truncate text-gray-900 dark:text-white">
+                                        <div className={`text-sm font-medium truncate ${task.status === 'COMPLETED' ? 'text-muted-foreground line-through' : ''}`}>
                                             {task.title}
                                         </div>
                                         {task.description && (
-                                            <div className="text-xs truncate text-gray-500 dark:text-neutral-400">
+                                            <div className={`text-xs truncate ${task.status === 'COMPLETED' ? 'text-muted-foreground/60' : 'text-muted-foreground'}`}>
                                                 {task.description}
                                             </div>
                                         )}
                                     </div>
                                     <Button
+                                        variant="ghost"
                                         size="sm"
-                                        onClick={() => handleAddTask(task.id)}
-                                        className="gap-2"
+                                        onClick={() => handleRemoveTask(task.id)}
+                                        className="h-7 w-7 p-0 transition-opacity hover:bg-red-50 dark:hover:bg-red-900/20"
                                     >
-                                        <Plus className="h-4 w-4" />
+                                        <X className="h-4 w-4  " />
                                     </Button>
                                 </div>
                             ))}
-                            
-                            {/* ページネーション */}
-                            {totalAvailable > ITEMS_PER_PAGE && (
-                                <div className="flex justify-center gap-2 pt-4">
+                        </div>
+                    ) : (
+                        <div className="flex flex-col items-center justify-center py-12 text-center">
+                            <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center mb-3">
+                                <Plus className="h-5 w-5 text-muted-foreground" />
+                            </div>
+                            <p className="text-sm font-medium mb-1">タスクがありません</p>
+                            <p className="text-xs text-muted-foreground">タスクを追加して進捗を管理しましょう</p>
+                        </div>
+                    )}
+                </CardContent>
+            </Card>
+            <button
+                onClick={openModal}
+                className="absolute bottom-4 right-4 z-20 bg-teal-500 hover:bg-teal-600 text-white rounded-full w-12 h-12 flex items-center justify-center shadow-lg transition-all"
+                aria-label="タスクを追加"
+                style={{ position: 'absolute' }}
+            >
+                <Plus className="h-6 w-6" />
+            </button>
+        </div>
+
+        <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+            <DialogContent className="sm:max-w-[600px] border-neutral-200 dark:border-neutral-700 dark:bg-neutral-900 max-h-[80vh] flex flex-col">
+                <DialogHeader>
+                    <DialogTitle className="text-xl font-semibold">
+                        タスクを追加
+                    </DialogTitle>
+                </DialogHeader>
+                
+                <div className="space-y-4 flex-1 overflow-hidden flex flex-col">
+                    <Input
+                        placeholder="タスクを検索..."
+                        value={searchQuery}
+                        onChange={(e) => {
+                            setSearchQuery(e.target.value);
+                            setCurrentPage(1);
+                        }}
+                        className="shadow-none rounded-sm"
+                    />
+
+                    {isLoadingAvailable ? (
+                        <div className="flex items-center justify-center py-12">
+                            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                        </div>
+                    ) : availableTasks.length === 0 ? (
+                        <div className="flex flex-col items-center justify-center py-12 text-center">
+                            <p className="text-sm text-muted-foreground">追加できるタスクがありません</p>
+                        </div>
+                    ) : (
+                        <>
+                            <div className="flex-1 overflow-y-auto space-y-2 pr-2">
+                                {availableTasks.map((task) => (
+                                    <div
+                                        key={task.id}
+                                        className="flex items-center gap-3 p-3 rounded-sm border border-neutral-200 dark:border-neutral-700 hover:border-teal-500 transition-colors"
+                                    >
+                                        <div
+                                            className="flex-shrink-0 w-9 h-9 rounded-full flex items-center justify-center"
+                                            style={{
+                                                backgroundColor: `${task.subject?.color ?? "#E5E7EB"}22`,
+                                            }}
+                                        >
+                                            <Book className="w-4 h-4" style={{ color: task.subject?.color ?? "#6366F1" }} />
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <div className="text-sm font-medium truncate">
+                                                {task.title}
+                                            </div>
+                                            {task.description && (
+                                                <div className="text-xs text-muted-foreground truncate">
+                                                    {task.description}
+                                                </div>
+                                            )}
+                                        </div>
+                                        <Button
+                                            size="sm"
+                                            onClick={() => handleAddTask(task.id)}
+                                            className="flex-shrink-0 shadow-none"
+                                        >
+                                            <Plus className="h-4 w-4 mr-1" />
+                                            追加
+                                        </Button>
+                                    </div>
+                                ))}
+                            </div>
+
+                            {totalPages > 1 && (
+                                <div className="flex items-center justify-between pt-4 border-t border-neutral-200 dark:border-neutral-700">
                                     <Button
                                         variant="outline"
                                         size="sm"
                                         onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                                         disabled={currentPage === 1}
+                                        className="gap-1 shadow-none"
                                     >
+                                        <ChevronLeft className="h-4 w-4" />
                                         前へ
                                     </Button>
-                                    <span className="flex items-center text-sm text-gray-600 dark:text-neutral-400">
-                                        {currentPage} / {Math.ceil(totalAvailable / ITEMS_PER_PAGE)}
+                                    <span className="text-sm text-muted-foreground">
+                                        {currentPage} / {totalPages}
                                     </span>
                                     <Button
                                         variant="outline"
                                         size="sm"
-                                        onClick={() => setCurrentPage(prev => prev + 1)}
-                                        disabled={currentPage >= Math.ceil(totalAvailable / ITEMS_PER_PAGE)}
+                                        onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                                        disabled={currentPage === totalPages}
+                                        className="gap-1 shadow-none"
                                     >
                                         次へ
+                                        <ChevronRight className="h-4 w-4" />
                                     </Button>
                                 </div>
                             )}
-                            </>
-                        ) : (
-                            <div className="text-center py-8 text-gray-500 dark:text-neutral-400">
-                                {searchQuery ? "検索結果がありません" : "追加可能なタスクがありません"}
-                            </div>
-                        )}
-                    </div>
+                        </>
+                    )}
                 </div>
             </DialogContent>
         </Dialog>

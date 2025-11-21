@@ -44,13 +44,6 @@ const sidebarSections: SidebarSection[] = [
         items: [
             { title: "ダッシュボード", url: "/dashboard", icon: Home },
             { title: "タスク一覧", url: "/dashboard/tasks", icon: ListTodo },
-            { title: "カレンダー", url: "/dashboard/calendar", icon: Calendar },
-        ]
-    },
-    {
-        label: "分析",
-        items: [
-            { title: "統計", url: "/dashboard/statistics", icon: BarChart3 },
         ]
     },
     {

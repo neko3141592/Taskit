@@ -4,12 +4,11 @@ import { toast } from "sonner";
 import axios from "axios";
 import  AddPageDialog  from "@/components/dashboard/tasks/task-page-add-dialog";
 import TaskPageList from "@/components/dashboard/tasks/task-page-list";
-import { BookOpen } from "lucide-react";
 
 
 type TaskPageProps = {
-    pages?: TaskPage[];
-    taskId: string;
+    readonly pages?: TaskPage[];
+    readonly taskId: string;
 }
 
 export default function TaskPage(props: TaskPageProps) {

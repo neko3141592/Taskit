@@ -34,7 +34,11 @@ import { useSession } from "next-auth/react";
 
 import axios from "axios";
 
-export default function CreateTaskModal() {
+type CreateTaskModalProps = {
+    readonly onClose?: () => void;
+};
+
+export default function CreateTaskModal({ onClose }: CreateTaskModalProps) {
     const { data: session } = useSession();
     const { subjects } = useSubject(session?.user?.id || "");
     const [isLoading, setIsLoading] = useState(false);
@@ -44,11 +48,12 @@ export default function CreateTaskModal() {
         status: "NOT_STARTED",
         subjectId: "",
         dueDate: undefined as Date | undefined,
+        notificationDaysBefore: undefined as number | undefined,
     });
     const [tagInput, setTagInput] = useState("");
     const [tags, setTags] = useState<string[]>([]);
 
-    const handleChange = (field: string, value: string | Date | undefined) => {
+    const handleChange = (field: string, value: string | Date | number | undefined) => {
         setFormData(prev => ({ ...prev, [field]: value }));
     };
 
@@ -108,7 +113,7 @@ export default function CreateTaskModal() {
         
         setIsLoading(true);
             try {
-                const res = await axios.post<APIResponse<Task>>('/api/tasks', {
+                await axios.post<APIResponse<Task>>('/api/tasks', {
                     ...formData,
                     tags,
                     userId: session?.user?.id,
@@ -120,9 +125,11 @@ export default function CreateTaskModal() {
                     status: "NOT_STARTED",
                     subjectId: "",
                     dueDate: undefined,
+                    notificationDaysBefore: undefined,
                 });
                 toast.success("タスクを作成しました");
                 setTags([]);
+                onClose?.();
             } catch (error) {
                 console.error("タスクの作成中にエラーが発生しました:", error);
             } finally {
@@ -131,37 +138,37 @@ export default function CreateTaskModal() {
     };
 
     return (
-        <DialogContent className="sm:max-w-[560px] border-neutral-200 dark:border-neutral-700 dark:bg-neutral-900 shadow-none">
-        <DialogHeader className="border-b border-neutral-100 dark:border-neutral-800 pb-6">
-            <DialogTitle className="flex items-center gap-3 text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">
-            <ListTodo className="h-6 w-6" />
+        <DialogContent className="sm:max-w-[560px] max-h-[90vh] overflow-y-auto border-neutral-200 dark:border-neutral-700 dark:bg-neutral-900 shadow-none">
+        <DialogHeader className="border-b border-neutral-100 dark:border-neutral-800 pb-3">
+            <DialogTitle className="flex items-center gap-2 text-xl font-semibold tracking-tight text-gray-900 dark:text-white">
+            <ListTodo className="h-5 w-5" />
                 新規タスク
             </DialogTitle>
         </DialogHeader>
         
-        <form onSubmit={handleSubmit} className="space-y-8 py-6">
-            <div className="space-y-1">
+        <form onSubmit={handleSubmit} className="space-y-4 py-4">
+            <div>
             <input
                 id="title"
                 placeholder="タイトルを入力"
                 value={formData.title ?? ""}
                 onChange={(e) => handleChange("title", e.target.value)}
-                className="w-full text-2xl font-semibold tracking-tight text-gray-900 dark:text-white dark:bg-neutral-900 placeholder:text-gray-400 dark:placeholder:text-neutral-500 focus:outline-none focus:ring-0 border-none p-0"
+                className="w-full text-lg font-semibold tracking-tight text-gray-900 dark:text-white dark:bg-neutral-900 placeholder:text-gray-400 dark:placeholder:text-neutral-500 focus:outline-none focus:ring-0 border-none p-0"
             />
             </div>
             
-            <div className="space-y-1">
+            <div>
                 <textarea
                     id="description"
                     placeholder="説明を入力..."
                     value={formData.description}
                     onChange={e => handleChange("description", e.target.value)}
-                    className="min-h-[80px] w-full resize-none text-gray-600 dark:text-neutral-300 dark:bg-neutral-900 placeholder:text-gray-400 dark:placeholder:text-neutral-500 focus:ring-0 focus:outline-none border-none p-0"
+                    className="min-h-[60px] w-full resize-none text-sm text-gray-600 dark:text-neutral-300 dark:bg-neutral-900 placeholder:text-gray-400 dark:placeholder:text-neutral-500 focus:ring-0 focus:outline-none border-none p-0"
                 />
             </div>
             
-            <div className="space-y-3">
-                <Label htmlFor="tags" className="text-sm font-medium text-gray-900 dark:text-white">タグ</Label>
+            <div className="space-y-2">
+                <Label htmlFor="tags" className="text-xs font-medium text-gray-900 dark:text-white">タグ</Label>
                 <div className="flex gap-2">
                     <Input
                         id="tags"
@@ -195,9 +202,9 @@ export default function CreateTaskModal() {
                     </Button>
                 </div>
                 {tags.length > 0 && (
-                    <div className="flex flex-wrap gap-2 pt-2">
+                    <div className="flex flex-wrap gap-1.5 pt-1">
                         {tags.map(tag => (
-                            <span key={tag} className="bg-gray-100 dark:bg-neutral-800 text-gray-900 dark:text-white px-3 py-1.5 rounded-sm flex items-center gap-2 text-sm font-medium">
+                            <span key={tag} className="bg-gray-100 dark:bg-neutral-800 text-gray-900 dark:text-white px-2 py-1 rounded-sm flex items-center gap-1.5 text-xs font-medium">
                                 {tag}
                                 <button
                                     type="button"
@@ -211,9 +218,30 @@ export default function CreateTaskModal() {
                 )}
             </div>
             
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 ">
-            <div className="space-y-3">
-                <Label htmlFor="subject" className="text-sm font-medium text-gray-900 dark:text-white">
+            <div className="space-y-2">
+                <Label htmlFor="notification" className="text-xs font-medium text-gray-900 dark:text-white">
+                通知
+                </Label>
+                <Select 
+                value={formData.notificationDaysBefore?.toString() ?? ""} 
+                onValueChange={(value) => handleChange("notificationDaysBefore", value ? Number.parseInt(value) : undefined)}
+                >
+                <SelectTrigger className="rounded-sm border-neutral-200 dark:border-neutral-700 dark:bg-neutral-800 dark:text-white shadow-none">
+                    <SelectValue placeholder="通知しない" />
+                </SelectTrigger>
+                <SelectContent className="rounded-sm shadow-none border border-neutral-200 dark:border-neutral-700 dark:bg-neutral-800">
+                    <SelectItem value="0">当日</SelectItem>
+                    <SelectItem value="1">1日前</SelectItem>
+                    <SelectItem value="2">2日前</SelectItem>
+                    <SelectItem value="3">3日前</SelectItem>
+                    <SelectItem value="7">1週間前</SelectItem>
+                </SelectContent>
+                </Select>
+            </div>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 ">
+            <div className="space-y-2">
+                <Label htmlFor="subject" className="text-xs font-medium text-gray-900 dark:text-white">
                 教科
                 </Label>
                 <Select 
@@ -239,8 +267,8 @@ export default function CreateTaskModal() {
                 </Select>
             </div>
             
-            <div className="space-y-3">
-                <Label htmlFor="status" className="text-sm font-medium text-gray-900 dark:text-white">
+            <div className="space-y-2">
+                <Label htmlFor="status" className="text-xs font-medium text-gray-900 dark:text-white">
                 ステータス
                 </Label>
                 <Select 
@@ -259,8 +287,8 @@ export default function CreateTaskModal() {
             </div>
             </div>
 
-            <div className="space-y-3">
-            <Label htmlFor="dueDate" className="text-sm font-medium text-gray-900 dark:text-white">
+            <div className="space-y-2">
+            <Label htmlFor="dueDate" className="text-xs font-medium text-gray-900 dark:text-white">
                 期限
             </Label>
             <Popover>
@@ -291,7 +319,7 @@ export default function CreateTaskModal() {
             </Popover>
             </div>
             
-            <DialogFooter className="pt-6 border-t border-neutral-100 dark:border-neutral-800 gap-2">
+            <DialogFooter className="pt-3 border-t border-neutral-100 dark:border-neutral-800 gap-2">
             <DialogClose asChild>
                 <Button variant="outline" type="button" className="rounded-sm border-neutral-200 dark:border-neutral-700 dark:bg-neutral-800 dark:text-white shadow-none">
                 キャンセル

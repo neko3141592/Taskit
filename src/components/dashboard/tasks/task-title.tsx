@@ -13,8 +13,8 @@ import { toast } from "sonner"
 import SubjectBadge from "@/components/ui/subject-badge";
 
 type TaskTitleProps = {
-    task: Task,
-    className?: string,
+    readonly task: Task,
+    readonly className?: string,
 }
 
 export default function TaskTitle(props: TaskTitleProps) {
